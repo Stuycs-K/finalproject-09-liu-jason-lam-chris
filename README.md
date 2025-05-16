@@ -8,7 +8,7 @@ Chris Lam
        
 ### Project Description:
 
-Explain what is this project. (CHANGE THIS!!!!!)
+This project is a tool to perform audio steganography using different algorithms.
   
 ### Instructions:
 
