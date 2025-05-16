@@ -33,5 +33,9 @@ public class lsb {
         return audioBytes;
     }
 
+    public static byte[] modifyBytes(){
+      
+    }
+
 
 }
