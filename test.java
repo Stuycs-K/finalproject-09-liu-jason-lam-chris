@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-
+import java.util.Arrays;
 
 public class test {
     public static void main(String[] args) throws Exception {
@@ -13,7 +13,6 @@ public class test {
         int height = image.getHeight();
         // New Image Creation
         BufferedImage creation = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        // Color[][] grayscale = new Color[width][height];
         // Looping
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
@@ -25,17 +24,24 @@ public class test {
                 creation.setRGB(j, i, (greyScale << 16) | (greyScale << 8) | greyScale);
             }
         }
-        
+        // Making file
         try {
             ImageIO.write(creation, "png", new File("output.png"));
             System.out.println("Image saved as output.png");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Color color = new Color(image.getRGB(0, 0)); // Pixel at (0,0)
-
-        // System.out.println("Red: " + color.getRed());
-        // System.out.sprintln("Green: " + color.getGreen());
-        // System.out.println("Blue: " + color.getBlue());
+        // Making array of normalized variables for the imagexs
+        double normalizedMagnitudes[][] = new double[height][width]; 
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                int pixel = creation.getRGB(j, i);
+                double red = ((pixel >> 16) & 0xff)/255.0;
+                normalizedMagnitudes[i][j] = red;
+            }
+        }
+        // for(int i = 0; i < height; i++){
+        //     System.out.println(Arrays.toString(normalizedMagnitudes[i]));
+        // }
     }
 }
