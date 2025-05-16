@@ -20,5 +20,7 @@ Chris has to do something today so wasn't able to discuss what we will do for pr
 
 Did some research on how to make an image into a spectrogram.
 
+Made a function to take in an image, grayscale it, and then normalize the values into an array. However to make it a spectrogram I think I have to use python.
+
 ### 2024-01-03 - Brief description
 

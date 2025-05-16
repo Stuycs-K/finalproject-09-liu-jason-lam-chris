@@ -40,8 +40,5 @@ public class test {
                 normalizedMagnitudes[i][j] = red;
             }
         }
-        // for(int i = 0; i < height; i++){
-        //     System.out.println(Arrays.toString(normalizedMagnitudes[i]));
-        // }
     }
 }
