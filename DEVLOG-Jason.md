@@ -26,3 +26,8 @@ Made a function to take in an image, grayscale it, and then normalize the values
 
 Started preliminary code in turning an image into a wav file with message hidden in spectrogram.
 
+### 2024-05-17 - Deepened understanding of Spectrogram Image Imbedding, Started making program more usable.
+
+Did more research into what functions do as well as code behaviors.
+
+

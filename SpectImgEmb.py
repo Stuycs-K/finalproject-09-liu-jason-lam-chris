@@ -2,8 +2,8 @@ from PIL import Image
 import numpy as np
 import librosa
 
-# Load the image
-image = Image.open("500px-Leonardo_da_Vinci_-_Last_Supper_(copy)_-_WGA12732.jpg")
+# Load the image and accquires its size
+image = Image.open("0085.jpg")
 image = image.convert("RGB")
 width, height = image.size
 
@@ -34,11 +34,11 @@ for i in range(height):
 normalized_magnitudes = np.flipud(normalized_magnitudes)
 
 # Creating base audio
-y, sr = librosa.load("1-min-silence.wav", sr=None)
+y, sr = librosa.load("pepes-theme.wav", sr=None)
 
 # Convert audio to spectrogram (Short-Time Fourier Transform)
-n_fft = 20480      # default is 2048, increase for better freq resolution
-hop_length = 26  # smaller means better time resolution
+n_fft = 2048      # default is 2048, increase for better freq resolution
+hop_length = 52  # smaller means better time resolution
 D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length)
 magnitude, phase = np.abs(D), np.angle(D)
 
@@ -46,7 +46,7 @@ magnitude, phase = np.abs(D), np.angle(D)
 image_resized = np.array(Image.fromarray((normalized_magnitudes * 255).astype(np.uint8)).resize(magnitude.shape[::-1]))
 image_resized = image_resized.astype(np.float32) / 255.0  # Normalize again
 
-# Optionally invert image if you want darker = louder
+# # Optionally invert image if you want darker = louder
 image_resized = 1.0 - image_resized
 
 # Scale image magnitudes to match the energy range of the original spectrogram
