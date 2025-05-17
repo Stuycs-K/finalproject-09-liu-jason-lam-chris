@@ -1,6 +1,32 @@
 from PIL import Image
 import numpy as np
 import librosa
+import argparse
+import sys
+
+# Base Settings
+imageName = "N/A.txt"
+audioName = "N/A.wav"
+outputName = "Output.txt"
+mode = "DarkPriority"
+
+# Create the parser with 4 args
+parser = argparse.ArgumentParser(description="Parse up to 4 optional string arguments")
+parser.add_argument('str1', type=str, nargs='?', help='First string')
+parser.add_argument('str2', type=str, nargs='?', help='Second string')
+parser.add_argument('str3', type=str, nargs='?', help='Third string')
+parser.add_argument('str4', type=str, nargs='?', help='Fourth string')
+
+args = parser.parse_args()
+
+args_dict = vars(args)
+provided_count = sum(1 for v in args_dict.values() if v is not None)
+
+if provided_count < 3:
+    print(f"Error: at least 3 arguments required, but only {provided_count} provided.")
+    sys.exit(1)
+
+print(f"{provided_count} arguments provided. Continuing...")
 
 # Load the image and accquires its size
 image = Image.open("0085.jpg")
