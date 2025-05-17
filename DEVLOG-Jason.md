@@ -22,5 +22,7 @@ Did some research on how to make an image into a spectrogram.
 
 Made a function to take in an image, grayscale it, and then normalize the values into an array. However to make it a spectrogram I think I have to use python.
 
-### 2024-01-03 - Brief description
+### 2024-05-16 - Worked on Spectrogram Image Imbedding
+
+Started preliminary code in turning an image into a wav file with message hidden in spectrogram.
 
