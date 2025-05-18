@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 //First arguement file, second arguement message
@@ -11,9 +12,10 @@ public class lsb {
     }else{
       String audioFilePath = args[0];
 	  String message = args[1];
+	  String nameOfFile = args[2];
       byte[] audioBytes = getBytesFromAudioFile(audioFilePath);
 	  int[] messageArray = messageToArray(message);
-	  
+	  modifyWav(messageArray, audioBytes, nameOfFile);
 	  
 	  /*for(int i = 0; i < messageArray.length; i++){
 		System.out.println(messageArray[i]);
@@ -79,6 +81,18 @@ public static int[] messageToArray(String s) {
    */
   //ln(Arrays.toString(parts));
   return parts;
+}
+
+public static void modifyWav(int[] messageArray, byte[]fileArray, String fileName){
+	byte[] modifiedArray = fileArray.clone();
+	for(int i = 0; i < messageArray.length; i++){
+		modifiedArray[i] = (byte)((fileArray[i + 89] & 252) | messageArray[i]);
+	}
+	try(FileOutputStream out = new FileOutputStream(fileName)){
+		out.write(modifiedArray);
+	}catch (IOException e) {
+		e.printStackTrace();
+    }
 }
 	
 }
