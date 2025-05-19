@@ -3,16 +3,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
 //First arguement file, second arguement message
 
 public class lsb {
   public static void main(String[] args) {
     if(args.length == 0){
-      System.out.println("No arguements detected!");
+      System.out.println("No arguements detected!  Use 'make' for syntax");
     }else{
-      String audioFilePath = args[0];
-	  String message = args[1];
-	  String nameOfFile = args[2];
+	  if(args[0].equals("encode")){
+      String audioFilePath = args[1];
+	  String message = args[2];
+	  String nameOfFile = args[3];
       byte[] audioBytes = getBytesFromAudioFile(audioFilePath);
 	  int[] messageArray = messageToArray(message);
 	  modifyWav(messageArray, audioBytes, nameOfFile);
@@ -21,10 +23,18 @@ public class lsb {
 		System.out.println(messageArray[i]);
 	  }*/
       if (audioBytes != null) {
-          System.out.println("Number of bytes read: " + audioBytes.length);
+          System.out.println("Number of bytes changed: " + messageArray.length);
       } else {
           System.out.println("Failed to read audio file.");
-      }
+		}
+	  }else if(args[0].equals("decode")){
+		String audioFilePath = args[1];
+		int numOfBytes = args[2];
+		byte[] audioBytes = getBytesFromAudioFile(audioFilePath);
+		decode(audioBytes, numOfBytes);
+	  }else{
+		System.out.println("Invalid arguements! Use 'make' for syntax");
+	  }
   }
 }
 
@@ -94,6 +104,17 @@ public static void modifyWav(int[] messageArray, byte[]fileArray, String fileNam
 	}catch (IOException e) {
 		e.printStackTrace();
     }
+}
+
+public static void decode(byte[] audioBytes, int numOfBytes){
+	for(int i = 96; i < numOfBytes + 96; i = i + 4){
+		int temp = audioBytes[i] & 3;
+		int temp2 = audioBytes[i + 1] & 3;
+		int temp3 = audioBytes[i + 1] & 3;
+		int temp4 = audioBytes[i + 1] & 3;
+		char temp3 = temp << 6 + temp2 << 4 + temp3 << 2 + temp4 
+		System.out.print(temp3);
+	}
 }
 	
 }
