@@ -84,6 +84,7 @@ image_resized = image_resized.astype(np.float32) / 255.0  # Normalize again
 if(mode == "Dark"):
     image_resized = 1.0 - image_resized
 
+# Weaken the brightness of the image
 image_resized = image_resized.astype(np.float32) / (100.0/visibility)
 
 # Scale image magnitudes to match the energy range of the original spectrogram
@@ -95,7 +96,7 @@ D_modified = image_scaled * np.exp(1j * phase)
 # Convert back to time domain
 y_modified = librosa.istft(D_modified)
 
-# Save or play the modified audio
+# Save the modified audio
 import soundfile as sf
 sf.write(outputName, y_modified, sr)
 
