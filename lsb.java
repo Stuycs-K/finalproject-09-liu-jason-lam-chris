@@ -38,9 +38,9 @@ public class lsb {
             e.printStackTrace();
             return null;
         }
-        for(int i = 0; i < 100; i++){ //audioBytes.length
+        /*for(int i = 0; i < 100; i++){ //audioBytes.length
           System.out.println(audioBytes[i]);
-        }
+        }*/
         return audioBytes;
     }
 
@@ -85,9 +85,10 @@ public static int[] messageToArray(String s) {
 
 public static void modifyWav(int[] messageArray, byte[]fileArray, String fileName){
 	byte[] modifiedArray = fileArray.clone();
+	
 	for(int i = 0; i < messageArray.length; i++){
-		modifiedArray[i] = (byte)((fileArray[i + 89] & 252) | messageArray[i]);
-	}
+		modifiedArray[i + 96] = (byte)((fileArray[i] & 252) | messageArray[i]);
+	} 
 	try(FileOutputStream out = new FileOutputStream(fileName)){
 		out.write(modifiedArray);
 	}catch (IOException e) {
