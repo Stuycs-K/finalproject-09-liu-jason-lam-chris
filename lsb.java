@@ -29,8 +29,11 @@ public class lsb {
 		}
 	  }else if(args[0].equals("decode")){
 		String audioFilePath = args[1];
-		int numOfBytes = args[2];
+		int numOfBytes = Integer.parseInt(args[2]);
 		byte[] audioBytes = getBytesFromAudioFile(audioFilePath);
+		for(int i = 0; i< 10; i++){
+			System.out.println(audioBytes[i + 96]);
+		}
 		decode(audioBytes, numOfBytes);
 	  }else{
 		System.out.println("Invalid arguements! Use 'make' for syntax");
@@ -107,13 +110,14 @@ public static void modifyWav(int[] messageArray, byte[]fileArray, String fileNam
 }
 
 public static void decode(byte[] audioBytes, int numOfBytes){
-	for(int i = 96; i < numOfBytes + 96; i = i + 4){
+	for(int i = 96; i < (numOfBytes / 4) + 96; i = i + 4){
+		System.out.println("daha");
 		int temp = audioBytes[i] & 3;
 		int temp2 = audioBytes[i + 1] & 3;
-		int temp3 = audioBytes[i + 1] & 3;
-		int temp4 = audioBytes[i + 1] & 3;
-		char temp3 = temp << 6 + temp2 << 4 + temp3 << 2 + temp4 
-		System.out.print(temp3);
+		int temp3 = audioBytes[i + 2] & 3;
+		int temp4 = audioBytes[i + 3] & 3;
+		char temp5 = (char)(temp << 6 + temp2 << 4 + temp3 << 2 + temp4);
+		System.out.println(temp5);
 	}
 }
 	
