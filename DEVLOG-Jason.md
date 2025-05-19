@@ -30,4 +30,8 @@ Started preliminary code in turning an image into a wav file with message hidden
 
 Did more research into what functions do as well as code behaviors.
 
+### 2024-05-17 - Made Spectrogram Image have arguements. Started working on putting image into existing sound clip rather than making one.
+
+Added commands for different factors of image in the spectrogram. 
+Started coding a method to add image to an existing spectrogram.
 
