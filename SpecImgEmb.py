@@ -10,25 +10,27 @@ image = image.convert("RGB")
 width, height = image.size
 
 # Convert to grayscale
-gray_image = Image.new("RGB", (width, height))
+image_array = np.zeros((height, width))
 pixels = image.load()
-gray_pixels = gray_image.load()
 
 for i in range(height):
     for j in range(width):
         r, g, b = pixels[j, i]
         gray = int(0.299 * r + 0.587 * g + 0.114 * b)
-        gray_pixels[j, i] = (gray, gray, gray)
-
-# Store pixels as int array
-image_array = np.zeros((height, width))
-for i in range(height):
-    for j in range(width):
-        r, _, _ = gray_pixels[j, i]
-        image_array[i][j] = r
+        image_array[i, j] = gray
 
 # Flip the image to match orientation
 image_array = np.flipud(image_array)
+
+# Rescaling Image
+target_height = 800  # frequency bins max 1025 based on n_fft
+target_width = 800   # time frames max 1 + sample length / hop_length
+
+image_resized = np.array(Image.fromarray((image_array).astype(np.uint8)).resize((target_width, target_height))).astype(np.float32) / 255.0
+
+# Starting location
+start_row = 0          # frequency bin start
+start_col = 100        # time frame start
 
 # Creating base audio
 y, sr = librosa.load("pepes-theme.wav", sr=None)
@@ -42,8 +44,17 @@ window = 'hann'
 D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length, win_length=win_length, window=window)
 magnitude, phase = np.abs(D), np.angle(D)
 
+# Quick Check if image will fit
+end_row = start_row + target_height
+end_col = start_col + target_width
+assert end_row <= magnitude.shape[0] and end_col <= magnitude.shape[1], "Image doesn't fit!"
+
+# adding to magnitude
+magnitude[start_row:end_row, start_col:end_col] += image_resized * np.max(magnitude) * .1
+
 # Convert back to time domain
-y_modified = librosa.istft(D, hop_length=hop_length, win_length=win_length, window=window)
+D_modified = magnitude * np.exp(1j * np.angle(D))
+y_modified = librosa.istft(D_modified, hop_length=hop_length, win_length=win_length, window=window)
 
 # Save the modified audio
 import soundfile as sf
