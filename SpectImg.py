@@ -10,6 +10,7 @@ audioName = "Silent.wav"
 outputName = "Output.wav"
 mode = "Dark"
 visibility = 100
+quality = 100
 
 # Create the parser with 3 args
 parser = argparse.ArgumentParser(description="Parse up to 4 optional string arguments")
@@ -17,6 +18,7 @@ parser.add_argument('str1', type=str, nargs='?', help='First string')
 parser.add_argument('str2', type=str, nargs='?', help='Second string')
 parser.add_argument('str3', type=str, nargs='?', help='Third string')
 parser.add_argument('str4', type=int, nargs='?', help='Fourth string')
+parser.add_argument('str5', type=int, nargs='?', help='Fifth string')
 
 args = parser.parse_args()
 
@@ -24,7 +26,7 @@ args_dict = vars(args)
 provided_count = sum(1 for v in args_dict.values() if v is not None)
 
 if provided_count < 2:
-    print(f"Error: at least 2 arguments required, but only {provided_count} provided.\nCommand should provide args for the following in order, Image Name, Output Name, Dark/Light Priority Mode")
+    print(f"Error: at least 2 arguments required, but only {provided_count} provided.\nCommand should provide args for the following in order, Image Name, Output Name, Dark/Light Priority Mode, Visibility Percentage, Quality of Image")
     sys.exit(1)
 
 imageName = args.str1
@@ -33,6 +35,8 @@ if args.str3 is not None:
     mode = args.str3
 if args.str4 is not None:
     visibility = args.str4
+if args.str5 is not None:
+    quality = args.str5
 
 # print(f"{provided_count} arguments provided. Continuing...")
 
@@ -72,7 +76,7 @@ y, sr = librosa.load(audioName, sr=None)
 
 # Convert audio to spectrogram (Short-Time Fourier Transform)
 n_fft = 2048      # default is 2048, increase for better freq resolution
-hop_length = 52  # smaller means better time resolution
+hop_length = (int)(512 * (quality/100.0)) # smaller means better image resolution but image sounds a lot worse, also audio is a lot longer
 D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length)
 magnitude, phase = np.abs(D), np.angle(D)
 
