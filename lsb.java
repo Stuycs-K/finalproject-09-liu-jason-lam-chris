@@ -18,7 +18,7 @@ public class lsb {
       byte[] audioBytes = getBytesFromAudioFile(audioFilePath);
 	  int[] messageArray = messageToArray(message);
 	  modifyWav(messageArray, audioBytes, nameOfFile);
-	  
+
 	  /*for(int i = 0; i < messageArray.length; i++){
 		System.out.println(messageArray[i]);
 	  }*/
@@ -82,10 +82,10 @@ public static int[] messageToArray(String s) {
 
 public static void modifyWav(int[] messageArray, byte[]fileArray, String fileName){
 	byte[] modifiedArray = fileArray.clone();
-	
+
 	for(int i = 0; i < messageArray.length; i++){
 		modifiedArray[i + 96] = (byte)((fileArray[i] & 252) | messageArray[i]);
-	} 
+	}
 	try(FileOutputStream out = new FileOutputStream(fileName)){
 		out.write(modifiedArray);
 	}catch (IOException e) {
@@ -101,8 +101,8 @@ public static void decode(byte[] audioBytes, int numOfBytes){
 		int temp3 = audioBytes[i + 2] & 3;
 		int temp4 = audioBytes[i + 3] & 3;
 		char temp5 = (char)((temp << 6) | (temp2 << 4) | (temp3 << 2) | temp4);
-		System.out.println(temp5);
+		System.out.print(temp5);
 	}
 }
-	
+
 }
