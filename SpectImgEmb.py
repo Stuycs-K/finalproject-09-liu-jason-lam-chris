@@ -6,30 +6,38 @@ import sys
 
 # Base Settings
 imageName = "N/A.txt"
-audioName = "N/A.wav"
-outputName = "Output.txt"
-mode = "DarkPriority"
+audioName = "Silent.wav"
+outputName = "Output.wav"
+mode = "Dark"
+visibility = 100
 
-# Create the parser with 4 args
+# Create the parser with 3 args
 parser = argparse.ArgumentParser(description="Parse up to 4 optional string arguments")
 parser.add_argument('str1', type=str, nargs='?', help='First string')
 parser.add_argument('str2', type=str, nargs='?', help='Second string')
 parser.add_argument('str3', type=str, nargs='?', help='Third string')
-parser.add_argument('str4', type=str, nargs='?', help='Fourth string')
+parser.add_argument('str4', type=int, nargs='?', help='Fourth string')
 
 args = parser.parse_args()
 
 args_dict = vars(args)
 provided_count = sum(1 for v in args_dict.values() if v is not None)
 
-if provided_count < 3:
-    print(f"Error: at least 3 arguments required, but only {provided_count} provided.")
+if provided_count < 2:
+    print(f"Error: at least 2 arguments required, but only {provided_count} provided.\nCommand should provide args for the following in order, Image Name, Output Name, Dark/Light Priority Mode")
     sys.exit(1)
 
-print(f"{provided_count} arguments provided. Continuing...")
+imageName = args.str1
+outputName = args.str2
+if args.str3 is not None:
+    mode = args.str3
+if args.str4 is not None:
+    visibility = args.str4
+
+# print(f"{provided_count} arguments provided. Continuing...")
 
 # Load the image and accquires its size
-image = Image.open("0085.jpg")
+image = Image.open(imageName)
 image = image.convert("RGB")
 width, height = image.size
 
@@ -44,9 +52,9 @@ for i in range(height):
         gray = int(0.299 * r + 0.587 * g + 0.114 * b)
         gray_pixels[j, i] = (gray, gray, gray)
 
-# Save the grayscale image
-gray_image.save("output.png")
-print("Image saved as output.png")
+# # Save the grayscale image
+# gray_image.save("output.png")
+# print("Image saved as output.png")
 
 # Create normalized magnitude array
 normalized_magnitudes = np.zeros((height, width))
@@ -60,7 +68,7 @@ for i in range(height):
 normalized_magnitudes = np.flipud(normalized_magnitudes)
 
 # Creating base audio
-y, sr = librosa.load("pepes-theme.wav", sr=None)
+y, sr = librosa.load(audioName, sr=None)
 
 # Convert audio to spectrogram (Short-Time Fourier Transform)
 n_fft = 2048      # default is 2048, increase for better freq resolution
@@ -72,8 +80,11 @@ magnitude, phase = np.abs(D), np.angle(D)
 image_resized = np.array(Image.fromarray((normalized_magnitudes * 255).astype(np.uint8)).resize(magnitude.shape[::-1]))
 image_resized = image_resized.astype(np.float32) / 255.0  # Normalize again
 
-# # Optionally invert image if you want darker = louder
-image_resized = 1.0 - image_resized
+# Optionally invert image if you want darker = louder
+if(mode == "Dark"):
+    image_resized = 1.0 - image_resized
+
+image_resized = image_resized.astype(np.float32) / (100.0/visibility)
 
 # Scale image magnitudes to match the energy range of the original spectrogram
 image_scaled = image_resized * np.max(magnitude)
@@ -86,5 +97,5 @@ y_modified = librosa.istft(D_modified)
 
 # Save or play the modified audio
 import soundfile as sf
-sf.write("image_embedded_audio.wav", y_modified, sr)
+sf.write(outputName, y_modified, sr)
 
