@@ -31,9 +31,6 @@ public class lsb {
 		String audioFilePath = args[1];
 		int numOfBytes = Integer.parseInt(args[2]);
 		byte[] audioBytes = getBytesFromAudioFile(audioFilePath);
-		for(int i = 0; i< 10; i++){
-			System.out.println(audioBytes[i + 96]);
-		}
 		decode(audioBytes, numOfBytes);
 	  }else{
 		System.out.println("Invalid arguements! Use 'make' for syntax");
@@ -66,7 +63,6 @@ public static int[] messageToArray(String s) {
      //print(num + " ");
     int indexcount = 0;
     for(int j = 7; j > -1; j--){
-        //System.out.print(j + " da ");
         int count = 0;
         if(num >= Math.pow(2, j)){
           count += 2;
@@ -77,22 +73,10 @@ public static int[] messageToArray(String s) {
           count++;
           num -= Math.pow(2, j);
         }
-        //print(count);
         parts[i * 4 + indexcount] = count;
         indexcount++;
     }
   }
-
-  /**Verify the contents of the array before you do more.
-   'T' -> 01010100 -> 01 01 01 00 -> 1, 1, 1, 0
-   'h' -> 01101000 -> 01 10 10 00 -> 1, 2, 2, 0
-   'i' -> 01101001 -> 01 10 10 01 -> 1, 2, 2, 1
-   's' -> 01110011 -> 01 11 00 11 -> 1, 3, 0, 3
-   ...etc.
-   So your data array would look like this:
-   { 1, 1, 1, 0, 1, 2, 2, 0, 1, 2, 2, 1, 1, 3, 0, 3...}
-   */
-  //ln(Arrays.toString(parts));
   return parts;
 }
 
@@ -110,13 +94,13 @@ public static void modifyWav(int[] messageArray, byte[]fileArray, String fileNam
 }
 
 public static void decode(byte[] audioBytes, int numOfBytes){
-	for(int i = 96; i < (numOfBytes / 4) + 96; i = i + 4){
-		System.out.println("daha");
+	for(int i = 96; i < (numOfBytes) + 96; i = i + 4){
+		//System.out.println("daha");
 		int temp = audioBytes[i] & 3;
 		int temp2 = audioBytes[i + 1] & 3;
 		int temp3 = audioBytes[i + 2] & 3;
 		int temp4 = audioBytes[i + 3] & 3;
-		char temp5 = (char)(temp << 6 + temp2 << 4 + temp3 << 2 + temp4);
+		char temp5 = (char)((temp << 6) | (temp2 << 4) | (temp3 << 2) | temp4);
 		System.out.println(temp5);
 	}
 }
