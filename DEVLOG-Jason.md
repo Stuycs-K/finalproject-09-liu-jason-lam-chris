@@ -36,3 +36,7 @@ Added commands for different factors of image in the spectrogram.
 Finished coding a method to add image to an existing spectrogram.
 Need to add command line args.
 
+### 2024-05-20 - Added arguements to program to instead hide image within existing audio.
+
+Added commands for different factors of image in the spectrogram. 
+Will start researching other methods.
