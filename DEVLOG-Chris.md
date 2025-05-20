@@ -28,7 +28,10 @@ LSB Decoder:
 	Wrote decode through bitwise functions much like the previous lab - 1 hour
 	Decoded a bug where the order of bitwise functions messed with recombination - 30 mins
 
-### 2025-05-19 - Researched + Started implementing Echo Hiding 
+### 2025-05-19 - Researched + Started implementing Echo Hiding
 Fixed LSB and PROPOSAL formatting - 15 mins
 Researched WAV files and echo hiding - 1 hour
 Finished code to open a WAV file and extract its channel, sample width, frame rate, and num of frames - 30 mins
+
+### 05-20 Text to Bit array
+Made a function to convert ascii characters into a specific bit array that I need - 40 mins
