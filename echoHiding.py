@@ -2,20 +2,16 @@ import wave
 import numpy as np
 import sys
 
-def byte[] dataToBits(dataToHide):
-    ans = byte[dataToHide.length * 8]
-    count = 0
+def dataToBits(dataToHide):
+    bits = []
     for char in dataToHide:
-        while char > 0:
-            if (char & 1):
-                ans[dataToHide.length * 8  - 1 - count] = 1;
-                char = char >> 1
-            else:
-                return ans
-            count = count + 1
+        val = ord(char)
+        bits.extend([(val >> i) & 1 for i in range(7, -1, -1)])
+    return np.array(bits, dtype=np.uint8)
 
 
 def encode(pathToFile, dataToHide, outputFile):
+    bits = dataToBits(dataToHide)
     with wave.open(filename, 'rb') as wavDescriptor:
         channels = wavDescriptor.getnchannels() #mono = 1 audio stream, stereo = 2 audio streams
         sampleWidth = wavDescriptor.getsampwidth() #Width refers to how many bytes are used to store one audio sample (sample = amplitude/noise at one stream, frame = full set of samples in one time instance)
@@ -26,7 +22,11 @@ def encode(pathToFile, dataToHide, outputFile):
         print(sampleWidth)
         print(frameRate)
         print(numFrames)
-        for i in range(dataToHide.length * 8):
+        if(channels == 1):
+            for i in range(0, len(bits)):
+                copyData = np.copy(frames)
+                delay = (int)(bits[i] * (frameRate/1000))
+                frames[i] = frames[i] + delay
 
 
 ##def decode(inputCiphertextfile, keyfile):
