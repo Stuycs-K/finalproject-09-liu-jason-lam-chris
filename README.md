@@ -8,7 +8,7 @@ Chris Lam
        
 ### Project Description:
 
-This project is a tool to perform audio steganography using different algorithms.
+Our goals for this project are to learn and implement different algorithms for audio steganography.
   
 ### Instructions:
 
