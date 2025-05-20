@@ -23,14 +23,17 @@ for i in range(height):
 image_array = np.flipud(image_array)
 
 # Rescaling Image
-target_height = 800  # frequency bins max 1025 based on n_fft
-target_width = 800   # time frames max 1 + sample length / hop_length
+target_height = 600  # frequency bins max 1025 based on n_fft
+target_width = 600   # time frames max 1 + sample length / hop_length
 
 image_resized = np.array(Image.fromarray((image_array).astype(np.uint8)).resize((target_width, target_height))).astype(np.float32) / 255.0
 
+# Dark Priority Mode
+image_resized = 1.0 - image_resized
+
 # Starting location
-start_row = 0          # frequency bin start
-start_col = 100        # time frame start
+start_row = 0        # frequency bin start
+start_col = 350        # time frame start
 
 # Creating base audio
 y, sr = librosa.load("pepes-theme.wav", sr=None)
@@ -50,7 +53,7 @@ end_col = start_col + target_width
 assert end_row <= magnitude.shape[0] and end_col <= magnitude.shape[1], "Image doesn't fit!"
 
 # adding to magnitude
-magnitude[start_row:end_row, start_col:end_col] += image_resized * np.max(magnitude) * .1
+magnitude[start_row:end_row, start_col:end_col] += image_resized * np.max(magnitude) * .005
 
 # Convert back to time domain
 D_modified = magnitude * np.exp(1j * np.angle(D))
@@ -58,4 +61,4 @@ y_modified = librosa.istft(D_modified, hop_length=hop_length, win_length=win_len
 
 # Save the modified audio
 import soundfile as sf
-sf.write("Clone.wav", y_modified, sr)
+sf.write("NewAudio.wav", y_modified, sr)
