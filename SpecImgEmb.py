@@ -23,8 +23,8 @@ for i in range(height):
 image_array = np.flipud(image_array)
 
 # Rescaling Image
-target_height = 800  # frequency bins max 1025 based on n_fft
-target_width = 800   # time frames max 1 + sample length / hop_length
+target_height = 600  # frequency bins max 1025 based on n_fft
+target_width = 600   # time frames max 1 + sample length / hop_length
 
 image_resized = np.array(Image.fromarray((image_array).astype(np.uint8)).resize((target_width, target_height))).astype(np.float32) / 255.0
 
@@ -33,7 +33,7 @@ image_resized = 1.0 - image_resized
 
 # Starting location
 start_row = 0        # frequency bin start
-start_col = 200        # time frame start
+start_col = 350        # time frame start
 
 # Creating base audio
 y, sr = librosa.load("pepes-theme.wav", sr=None)
