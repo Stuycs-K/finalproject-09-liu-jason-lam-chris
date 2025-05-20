@@ -28,13 +28,7 @@ LSB Decoder:
 	Wrote decode through bitwise functions much like the previous lab - 1 hour
 	Decoded a bug where the order of bitwise functions messed with recombination - 30 mins
 
-### 2025-05-19 - Researched Echo Hiding
+### 2025-05-19 - Researched + Started implementing Echo Hiding 
 Fixed LSB and PROPOSAL formatting - 15 mins
-Researched
-Sites:
-
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wavfile.read.html DOCUMENTATION
-
-https://arxiv.org/html/2408.13277v2 Frequency
-
-https://svenruppert.com/2024/04/17/audio-steganography-in-more-detail/ TYPES OF AUDIO STEG
+Researched WAV files and echo hiding - 1 hour
+Finished code to open a WAV file and extract its channel, sample width, frame rate, and num of frames - 30 mins
