@@ -32,9 +32,9 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
                 delay1 = (int)(frameRate/1000)
                 delay2 = (int) (frameRate/500)
                 if(bits[i] == 0):
-                    copyData[i + delay1] += bytes(frames[i] * 0.4) #0.4 is the amplitude of the echo
+                    copyData[i + delay1] += (frames[i] // 4)#0.4 is the amplitude of the echo
                 elif(bits[i] == 1):
-                    copyData[i + delay2] += bytes(frames[i] * 0.4)
+                    copyData[i + delay2] += (frames[i] // 4)
                 else:
                     print("Error in dataToBits")
         copyData = np.clip(copyData, -32768, 32767)
