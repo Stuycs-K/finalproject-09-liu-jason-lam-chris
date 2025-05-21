@@ -45,3 +45,8 @@ Researched Phase Encoding
 - https://medium.com/@achyuta.katta/audio-steganography-using-phase-encoding-d13f100380f2
 
 made a basic plan of how to intiate it.
+
+### 2024-05-20 - AP Macroeconomics Test + Research
+
+Did research on how stft allows me to change phases and then made a pseudo code type plan.
+Didn't end up doing much bc AP Macro today and AP Calc BC tmrw.
