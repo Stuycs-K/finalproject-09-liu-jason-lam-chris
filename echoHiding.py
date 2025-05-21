@@ -25,9 +25,15 @@ def encode(pathToFile, dataToHide, outputFile):
         if(channels == 1):
             for i in range(0, len(bits)):
                 copyData = np.copy(frames)
-                delay = (int)(bits[i] * (frameRate/1000))
-                frames[i] = frames[i] + delay
-
+                delay1 = (int)(frameRate/1000)
+                delay2 = (int) (frameRate/500)
+                if(bit[i] == 0):
+                    copyData[i + delay1] += int(frames[i] * 0.4) #0.4 is the amplitude of the echo
+                elif(bit[i] == 1):
+                    copyData[i + delay2] += int(frames[i] * 0.4)
+                else:
+                    print("Error in dataToBits")
+            
 
 ##def decode(inputCiphertextfile, keyfile):
 
