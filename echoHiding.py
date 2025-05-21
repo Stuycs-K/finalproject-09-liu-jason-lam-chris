@@ -22,9 +22,9 @@ def encode(pathToFile, dataToHide, outputFile):
         print(sampleWidth)
         print(frameRate)
         print(numFrames)
+        copyData = np.copy(frames)
         if(channels == 1):
             for i in range(0, len(bits)):
-                copyData = np.copy(frames)
                 delay1 = (int)(frameRate/1000)
                 delay2 = (int) (frameRate/500)
                 if(bit[i] == 0):
@@ -33,8 +33,11 @@ def encode(pathToFile, dataToHide, outputFile):
                     copyData[i + delay2] += int(frames[i] * 0.4)
                 else:
                     print("Error in dataToBits")
+        copyData = np.clip(copyData, -32768, 32767)
+        wave.open(outputFile, 'wb') as writeFile:
+            writeFile.setparams(wavDescriptor.getparams())
+            writeFile.writeframes(copyData.tobytes())
             
-
 ##def decode(inputCiphertextfile, keyfile):
 
 
