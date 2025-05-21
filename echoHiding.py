@@ -9,38 +9,42 @@ def dataToBits(dataToHide):
         bits.extend([(val >> i) & 1 for i in range(7, -1, -1)])
     return np.array(bits, dtype=np.uint8)
 
-
 def encodeDelay(pathToFile, dataToHide, outputFile):
     bits = dataToBits(dataToHide)
+    
     with wave.open(pathToFile, 'rb') as wavDescriptor:
-        channels = wavDescriptor.getnchannels() #mono = 1 audio stream, stereo = 2 audio streams
-        sampleWidth = wavDescriptor.getsampwidth() #Width refers to how many bytes are used to store one audio sample (sample = amplitude/noise at one stream, frame = full set of samples in one time instance)
-        frameRate = wavDescriptor.getframerate() #Frequency: Number of cycles a wave completes in one cycle
-        numFrames = wavDescriptor.getnframes() #Returns the number of frames in the audio
-        frames = wavDescriptor.readframes(numFrames)
+        channels = wavDescriptor.getnchannels()
+        sampleWidth = wavDescriptor.getsampwidth()
+        frameRate = wavDescriptor.getframerate()
+        numFrames = wavDescriptor.getnframes()
+
         print(channels)
         print(sampleWidth)
         print(frameRate)
         print(numFrames)
-        copyData = frames[:]
-        #for i in range(0, len(frames)):
-        #    print(frames[i])
-        #for i in range (0, len(copyData)):
-        #    print(copyData[i])
-        if(channels == 1):
-            for i in range(0, len(bits)):
-                delay1 = (int)(frameRate/1000)
-                delay2 = (int) (frameRate/500)
-                if(bits[i] == 0):
-                    copyData[i + delay1] += (frames[i] // 4)#0.4 is the amplitude of the echo
-                elif(bits[i] == 1):
-                    copyData[i + delay2] += (frames[i] // 4)
+        
+        frames = wavDescriptor.readframes(numFrames)
+        
+        audioData = np.frombuffer(frames, dtype=np.int16)
+        copyData = np.copy(audioData)
+
+        if channels == 1:
+            delay1 = int(frameRate / 1000)  # 1ms
+            delay2 = int(frameRate / 500)   # 2ms
+
+            for i in range(len(bits)):
+                if bits[i] == 0 and i + delay1 < len(copyData):
+                    copyData[i + delay1] += int(audioData[i] * 0.25)
+                elif bits[i] == 1 and i + delay2 < len(copyData):
+                    copyData[i + delay2] += int(audioData[i] * 0.25)
                 else:
-                    print("Error in dataToBits")
+                    print("Index out of bounds or invalid bit")
+
         copyData = np.clip(copyData, -32768, 32767)
+
         with wave.open(outputFile, 'wb') as writeFile:
             writeFile.setparams(wavDescriptor.getparams())
-            writeFile.writeframes(copyData.tobytes())
+            writeFile.writeframes(copyData.astype(np.int16).tobytes())
 
 ##def encodeAmplitude
 

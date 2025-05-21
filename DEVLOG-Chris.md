@@ -33,7 +33,7 @@ Fixed LSB and PROPOSAL formatting - 15 mins
 Researched WAV files and echo hiding - 1 hour
 Finished code to open a WAV file and extract its channel, sample width, frame rate, and num of frames - 30 mins
 
-### 05-20 Text to Bit array + Echo encoding for MONO only (1 channel)
+### 05-20 - Text to Bit array + Echo encoding for MONO only (1 channel)
 Made a function to convert ascii characters into a specific bit array that I need - 40 mins
 
 Echo encoding (2 hours):
@@ -41,3 +41,6 @@ Echo encoding (2 hours):
 	- Learnt what signals were and decided and currently debating on whether or not to use them
 	- Used extracted information from WAV file to have an echo and two delays, matched each delay to their corresponding bit array
 	- Wrote write to a WAV file
+
+### 05-21 - Debugging Echo encode
+Fixed like 30 syntax bugs, cleaned up the code, made every parameter in a WAV file print, still need to test if it works by creating a working decode - 1 hour
