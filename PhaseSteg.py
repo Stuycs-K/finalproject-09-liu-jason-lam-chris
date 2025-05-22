@@ -8,7 +8,7 @@ import sys
 text = "PiepiePiepie"
 
 # Making array of bits
-zeros_array = []
+bits = []
 
 for char in text:
     binary = format(ord(char), '08b')  # Convert character to 8-bit binary string
@@ -28,6 +28,23 @@ D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length)
 
 # Get Magnitude and Phase arrays
 magnitude, phase = np.abs(D), np.angle(D)
+
+index = 0
+done = False
+
+# Adding phase changes
+for i in range (0, phase.shape[1]):
+    for j in range (38, 513):
+        if index == len(bits):
+            done = True
+            break
+        if bits[index] == '0':
+            phase[j, i] += np.pi/2
+        else:
+            phase[j, i] -= np.pi/2
+        index += 1
+    if done:
+        break
 
 # Convert back to time domain
 D_modified = magnitude * np.exp(1j * phase)
