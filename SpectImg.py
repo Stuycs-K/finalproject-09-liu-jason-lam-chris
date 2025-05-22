@@ -6,7 +6,7 @@ import sys
 
 # Base Settings
 imageName = "N/A.txt"
-audioName = "Silent.wav"
+audioName = "audio/Silent.wav"
 outputName = "Output.wav"
 mode = "Dark"
 visibility = 100
