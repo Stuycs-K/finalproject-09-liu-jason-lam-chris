@@ -15,12 +15,12 @@ frequency_resolution = 1
 
 # Create the parser with 3 args
 parser = argparse.ArgumentParser(description="Parse up to 4 optional string arguments")
-parser.add_argument('str1', type=str, nargs='?', help='First string')
-parser.add_argument('str2', type=str, nargs='?', help='Second string')
-parser.add_argument('str3', type=str, nargs='?', help='Third string')
-parser.add_argument('str4', type=int, nargs='?', help='Fourth string')
-parser.add_argument('str5', type=int, nargs='?', help='Fifth string')
-parser.add_argument('str6', type=int, nargs='?', help='Sixth string')
+parser.add_argument('str1', type=str, nargs='?', help='Image Name')
+parser.add_argument('str2', type=str, nargs='?', help='Output Name')
+parser.add_argument('str3', type=str, nargs='?', help='Color Priority Mode')
+parser.add_argument('str4', type=float, nargs='?', help='Visibility')
+parser.add_argument('str5', type=float, nargs='?', help='Time Resolution Multiplier')
+parser.add_argument('str6', type=float, nargs='?', help='Frequency Resolution Multiplier')
 
 args = parser.parse_args()
 
@@ -39,7 +39,7 @@ if args.str4 is not None:
     visibility = args.str4
 if args.str5 is not None:
     time_resolution = args.str5
-if args.str5 is not None:
+if args.str6 is not None:
     frequency_resolution = args.str6
 
 # print(f"{provided_count} arguments provided. Continuing...")
@@ -79,7 +79,7 @@ normalized_magnitudes = np.flipud(normalized_magnitudes)
 y, sr = librosa.load(audioName, sr=None)
 
 # Convert audio to spectrogram (Short-Time Fourier Transform)
-n_fft = 2048 * frequency_resolution      # default is 2048, increase for better freq resolution
+n_fft = (int)(2048 * frequency_resolution)      # default is 2048, increase for better freq resolution
 hop_length = (int)(512 / (time_resolution*1.0)) # smaller means better image resolution but image sounds a lot worse, also audio is a lot longer
 D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length)
 magnitude, phase = np.abs(D), np.angle(D)
