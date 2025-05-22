@@ -50,3 +50,4 @@ made a basic plan of how to intiate it.
 
 Did research on how stft allows me to change phases and then made a pseudo code type plan.
 Didn't end up doing much bc AP Macro today and AP Calc BC tmrw.
+So I did end up doing work I made the code for phase encoding need to make decoding tmrw.
