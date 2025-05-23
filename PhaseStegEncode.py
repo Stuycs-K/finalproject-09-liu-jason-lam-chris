@@ -28,7 +28,7 @@ audio = args.str3
 outputName = args.str4
 
 # Text used
-# text = "PiepiePiepie"
+text = ""
 
 # Making array of bits
 bits = []
@@ -38,8 +38,8 @@ for char in text:
     for bit in binary:
         bits.append(bit)
 
-# End condition
-bits.append('2')
+# # End condition
+# bits.append('2')
 
 print(bits)
 # Creating base audio
@@ -59,20 +59,26 @@ magnitude, phase = np.abs(D), np.angle(D)
 index = 0
 done = False
 
+# Threshold to add
+threshold = 0.1 * np.max(magnitude)  # 1% of max magnitude
+
 # Adding phase changes
 for i in range (0, phase.shape[1]):
     for j in range (38, 513):
         if index == len(bits):
             done = True
             break
-        if bits[index] == '0':
-            phase[j, i] += np.pi/2
-        else:
-            if bits[index] == '2':
-                phase[j, i] += np.pi
+        if magnitude[j, i] > threshold:
+            print(phase[j, i])
+            if bits[index] == '0':
+                phase[j, i] += np.pi/2
             else:
-                phase[j, i] -= np.pi/2
-        index += 1
+                if bits[index] == '2':
+                    phase[j, i] += np.pi
+                else:
+                    phase[j, i] -= np.pi/2
+            print(phase[j, i])
+            index += 1
     if done:
         break
 

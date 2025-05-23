@@ -42,25 +42,29 @@ D_mod = librosa.stft(y_mod, n_fft=n_fft, hop_length=hop_length)
 
 # Get Phase Arrays
 phase_base, phase_mod = np.angle(D_base), np.angle(D_mod)
+magnitude = np.abs(D_base)
 
 done = False
-
 index = 0
+
+# Threshold to check
+threshold = 0.1 * np.max(magnitude)  # 1% of max magnitude
 
 for i in range (0, phase_base.shape[1]):
     if done:
         break
     for j in range (38, 513):
-        print(phase_base[j, i], phase_mod[j, i])
-        difference = (phase_mod[j, i] - phase_base[j, i] + np.pi) % (2 * np.pi) - np.pi
-        if difference == np.pi or index == 10000:
-            done = True
-            break  # Stop bit found — break inner loop
-        elif difference == np.pi / 2:
-            bits.append('0')
-        elif difference == -np.pi / 2:
-            bits.append('1')
-        index += 1
+        if magnitude[j, i] > threshold:
+            if index == 33:
+                done = True
+                break  # Stop bit found — break inner loop
+            difference = (phase_mod[j, i] - phase_base[j, i] + np.pi) % (2 * np.pi) - np.pi
+            print(phase_base[j, i], phase_mod[j, i], difference)
+            if difference == np.pi / 2:
+                bits.append('0')
+            elif difference == -np.pi / 2:
+                bits.append('1')
+            index += 1
 
 # Forming into a message
 chars = []
