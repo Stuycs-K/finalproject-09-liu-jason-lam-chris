@@ -1,6 +1,7 @@
 import wave
 import numpy as np
 import sys
+import scipy.signal
 
 def dataToBits(dataToHide):
     bits = []
@@ -11,7 +12,7 @@ def dataToBits(dataToHide):
 
 def encodeDelay(pathToFile, dataToHide, outputFile):
     bits = dataToBits(dataToHide)
-    
+
     with wave.open(pathToFile, 'rb') as wavDescriptor:
         channels = wavDescriptor.getnchannels()
         sampleWidth = wavDescriptor.getsampwidth()
@@ -22,9 +23,9 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
         print(sampleWidth)
         print(frameRate)
         print(numFrames)
-        
+
         frames = wavDescriptor.readframes(numFrames)
-        
+
         audioData = np.frombuffer(frames, dtype=np.int16)
         copyData = np.copy(audioData)
 
@@ -48,11 +49,39 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
 
 ##def encodeAmplitude
 
-##def decode(inputCiphertextfile, keyfile):
+def decode(pathToFile, messageLength):
+    messageLength = int(messageLength)
+    bits = []
+    with wave.open(pathToFile, 'rb') as wavDescriptor:
+        channels = wavDescriptor.getnchannels()
+        sampleWidth = wavDescriptor.getsampwidth()
+        frameRate = wavDescriptor.getframerate()
+        numFrames = wavDescriptor.getnframes()
+        delay1 = int(frameRate / 1000)  # 1ms
+        delay2 = int(frameRate / 500)   # 2ms
+        windowSize = 2 * delay2
+        frames = wavDescriptor.readframes(numFrames)
+        audioData = np.frombuffer(frames, dtype=np.int16)
+        for i in range(messageLength * 8):
+            start = i * windowSize
+            end = start + windowSize
+            if end > len(audioData):
+                break
+            segment = audioData[start:end]
+            corr = correlate(segment, segment, mode='full')
+            mid = len(corr) // 2
+            delay1_corr = corr[mid + delay1]
+            delay2_corr = corr[mid + delay2]
 
+            bit = 0 if delay1_corr > delay2_corr else 1
+            bits.append(bit)
+    for i in range(0, len(bits), 8):
+        bitarr = [bits[i], bits[i + 1], bits[i + 2], bits[i + 3], bits[i + 4], bits[i + 5], bits[i + 6], bits[i + 7]]
+        bitString = "".join(str(bit) for bit in bitarr)
+        print(char(int(bitString, 2)))
 
 if __name__ == "__main__":
     if(sys.argv[1] == "encodeDelay"):
         encodeDelay(sys.argv[2], sys.argv[3], sys.argv[4])
-#    elif(sys.argv[1] == "encode"):
-        ##
+    elif(sys.argv[1] == "decode"):
+        decode(sys.argv[2], sys.argv[3])
