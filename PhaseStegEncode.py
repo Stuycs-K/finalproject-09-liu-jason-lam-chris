@@ -38,6 +38,10 @@ for char in text:
     for bit in binary:
         bits.append(bit)
 
+# End condition
+for i in range (4):
+    bits.append('2')
+
 # Creating base audio
 y, sr = librosa.load(audio, sr=None)
 
@@ -64,7 +68,10 @@ for i in range (0, phase.shape[1]):
         if bits[index] == '0':
             phase[j, i] += np.pi/2
         else:
-            phase[j, i] -= np.pi/2
+            if bits[index] == '2':
+                phase[j, i] += np.pi
+            else:
+                phase[j, i] -= np.pi/2
         index += 1
     if done:
         break
