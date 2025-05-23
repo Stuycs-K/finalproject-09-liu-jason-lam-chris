@@ -28,7 +28,7 @@ audio = args.str3
 outputName = args.str4
 
 # Text used
-text = "PiepiePiepie"
+# text = "PiepiePiepie"
 
 # Making array of bits
 bits = []
@@ -39,9 +39,9 @@ for char in text:
         bits.append(bit)
 
 # End condition
-for i in range (4):
-    bits.append('2')
+bits.append('2')
 
+print(bits)
 # Creating base audio
 y, sr = librosa.load(audio, sr=None)
 
