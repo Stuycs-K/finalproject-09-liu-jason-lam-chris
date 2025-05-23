@@ -31,6 +31,25 @@ bits = []
 y_base, sr_base = librosa.load(audioBase, sr=None)
 y_mod, sr_mod = librosa.load(audioModified, sr=None)
 
+# Segment duration in seconds
+segment_duration = 10
+samples_per_segment = int(sr_base * segment_duration)
+
+# Number of segments
+num_segments = int(np.ceil(len(y_base) / samples_per_segment))
+
+# Pad if needed
+if len(y_base) % samples_per_segment != 0:
+    padding = samples_per_segment * num_segments - len(y_base)
+    y_base = np.pad(y_base, (0, padding), mode='constant')
+if len(y_mod) % samples_per_segment != 0:
+    padding = samples_per_segment * num_segments - len(y_mod)
+    y_mod = np.pad(y_mod, (0, padding), mode='constant')
+
+# Split into segments
+segments_base = y_base.reshape((num_segments, samples_per_segment))
+segments_mod = y_mod.reshape((num_segments, samples_per_segment))
+
 # Convert audio to spectrogram (Short-Time Fourier Transform)
 n_fft = 2048   
 hop_length = 512 
@@ -40,42 +59,20 @@ window = 'hann'
 D_base = librosa.stft(y_base, n_fft=n_fft, hop_length=hop_length)
 D_mod = librosa.stft(y_mod, n_fft=n_fft, hop_length=hop_length)
 
-# Get Phase Arrays
-phase_base, phase_mod = np.angle(D_base), np.angle(D_mod)
-magnitude = np.abs(D_base)
-
-done = False
-index = 0
-
-# Threshold to check
-threshold = 0.1 * np.max(magnitude)  # 1% of max magnitude
-
-for i in range (0, phase_base.shape[1]):
-    if done:
-        break
-    for j in range (38, 513):
-        if magnitude[j, i] > threshold:
-            if index == 33:
-                done = True
-                break  # Stop bit found — break inner loop
-            difference = (phase_mod[j, i] - phase_base[j, i] + np.pi) % (2 * np.pi) - np.pi
-            print(phase_base[j, i], phase_mod[j, i], difference)
-            if difference == np.pi / 2:
-                bits.append('0')
-            elif difference == -np.pi / 2:
-                bits.append('1')
-            index += 1
-
-# Forming into a message
-chars = []
-
-for i in range(0, len(bits), 8):
-    byte = bits[i:i+8]
-    if len(byte) < 8:
-        break  # Skip incomplete bytes
-    char = chr(int(''.join(byte), 2))
-    chars.append(char)
-
-print(bits)
-message = ''.join(chars)
-print("Decoded message:", message)
+for i in range(num_segments):
+    # Form into spectrogram
+    D_base = librosa.stft(segments_base[i], n_fft=n_fft, hop_length=hop_length)
+    D_mod = librosa.stft(segments_mod[i], n_fft=n_fft, hop_length=hop_length)
+    # Get phase and magnitude
+    mag_base, phase_base = np.abs(D_base), np.angle(D_base)
+    mag_mod, phase_mod = np.abs(D_mod), np.angle(D_mod)
+    # Only consider strong magnitude bins
+    magnitude_threshold = 0.5
+    mask = (mag_base > magnitude_threshold) & (mag_mod > magnitude_threshold)
+    # Compute difference only where magnitude is high
+    phase_diff = (phase_mod - phase_base)[mask]
+    # Normalize difference to [-π, π] (unwrap)
+    phase_diff = (phase_diff + np.pi) % (2 * np.pi) - np.pi
+    # Count how many are near ±π/2
+    bit_value = 0 if np.mean(phase_diff) > 0 else 1
+    print("For segment " + str(i) + " difference is " + str(bit_value) + " phase diff is " + str(np.mean(phase_diff)))
