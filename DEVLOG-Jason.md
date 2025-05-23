@@ -59,4 +59,5 @@ Will work on decoder tomorrow
 
 ### 2024-05-23 - Worked on Phase Encoding
 
-Made decoder and realized encoder does not work so I need to switch approaches as my current one doesn't work.
+Made decoder and realized encoder does not work so I need to switch approaches as my current one doesn't work
+Did research on other method using DFT so imma try that tmrw
