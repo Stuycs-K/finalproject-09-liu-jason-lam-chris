@@ -4,6 +4,29 @@ import librosa
 import argparse
 import sys
 
+text = "N/A"
+audio = "N/A.wav"
+outputName = "output.wav"
+
+# Create the parser with 3 args
+parser = argparse.ArgumentParser(description="Parse up to 3 optional string arguments")
+parser.add_argument('str2', type=str, nargs='?', help='Input Text')
+parser.add_argument('str3', type=str, nargs='?', help='Input Audio')
+parser.add_argument('str4', type=str, nargs='?', help='Output')
+
+args = parser.parse_args()
+
+args_dict = vars(args)
+provided_count = sum(1 for v in args_dict.values() if v is not None)
+
+if provided_count < 3:
+    print(f"Error: at least 3 arguments required, but only {provided_count} provided.\nCommand should provide args for the following in order, Input Text, Input Audio, Output Name")
+    sys.exit(1)
+
+text = args.str2
+audio = args.str3
+outputName = args.str4
+
 # Text used
 text = "PiepiePiepie"
 
@@ -16,7 +39,7 @@ for char in text:
         bits.append(bit)
 
 # Creating base audio
-y, sr = librosa.load("audio/pepes-theme.wav", sr=None)
+y, sr = librosa.load(audio, sr=None)
 
 # Convert audio to spectrogram (Short-Time Fourier Transform)
 n_fft = 2048   
@@ -52,4 +75,4 @@ y_modified = librosa.istft(D_modified, hop_length=hop_length, win_length=win_len
 
 # Save the modified audio
 import soundfile as sf
-sf.write("test.wav", y_modified, sr)
+sf.write(outputName, y_modified, sr)

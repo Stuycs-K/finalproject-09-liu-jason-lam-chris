@@ -40,7 +40,7 @@ args_dict = vars(args)
 provided_count = sum(1 for v in args_dict.values() if v is not None)
 
 if provided_count < 5:
-    print(f"Error: at least 3 arguments required, but only {provided_count} provided.\nCommand should provide args for the following in order, Image Name, Audio Name, Output Name, Image Height, Image Length, Image start X, Image start Y, Dark/Light Priority Mode, Visibility Percentage, Time Resolution of Image Multiplier, Frequency Resolution of Image Multiplier")
+    print(f"Error: at least 5 arguments required, but only {provided_count} provided.\nCommand should provide args for the following in order, Image Name, Audio Name, Output Name, Image Height, Image Length, Image start X, Image start Y, Dark/Light Priority Mode, Visibility Percentage, Time Resolution of Image Multiplier, Frequency Resolution of Image Multiplier")
     sys.exit(1)
 
 imageName = args.str1
