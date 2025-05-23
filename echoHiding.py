@@ -48,11 +48,18 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
 
 ##def encodeAmplitude
 
-##def decode(inputCiphertextfile, keyfile):
-
+def decode(pathToFile):
+    with wave.open(pathToFile, 'rb') as wavDescriptor:
+        channels = wavDescriptor.getnchannels()
+        sampleWidth = wavDescriptor.getsampwidth()
+        frameRate = wavDescriptor.getframerate()
+        numFrames = wavDescriptor.getnframes()
+        delay1 = int(frameRate / 1000)  # 1ms
+        delay2 = int(frameRate / 500)   # 2ms
+        for i in range(0, len(samples), 
 
 if __name__ == "__main__":
     if(sys.argv[1] == "encodeDelay"):
         encodeDelay(sys.argv[2], sys.argv[3], sys.argv[4])
-#    elif(sys.argv[1] == "encode"):
-        ##
+    elif(sys.argv[1] == "encode"):
+        decode(sys.argv[2])
