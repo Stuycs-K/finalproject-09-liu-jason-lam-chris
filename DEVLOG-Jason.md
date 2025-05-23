@@ -46,8 +46,17 @@ Researched Phase Encoding
 
 made a basic plan of how to intiate it.
 
-### 2024-05-20 - AP Macroeconomics Test + Research
+### 2024-05-21 - AP Macroeconomics Test + Research
 
 Did research on how stft allows me to change phases and then made a pseudo code type plan.
 Didn't end up doing much bc AP Macro today and AP Calc BC tmrw.
 So I did end up doing work I made the code for phase encoding need to make decoding tmrw.
+
+### 2024-05-22 - Worked on Phase Encoding
+
+Did like basics for phase encoding
+Will work on decoder tomorrow
+
+### 2024-05-23 - Worked on Phase Encoding
+
+Made decoder and realized encoder does not work so I need to switch approaches as my current one doesn't work.

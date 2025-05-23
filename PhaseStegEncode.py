@@ -79,10 +79,8 @@ for i in range(num_segments):
     # Get Magnitude and Phase arrays
     magnitude, phase = np.abs(D), np.angle(D)
     # Phase Modification
-    if bits[i] == '0':
-        phase = np.pi/2
-    else:
-        phase = np.pi/2
+    if bits[i] == '1':
+        phase += np.pi/2
     # Construction
     D_modified = magnitude * np.exp(1j * phase)
     # Convert back to time domain
