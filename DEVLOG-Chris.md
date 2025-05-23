@@ -44,3 +44,9 @@ Echo encoding (2 hours):
 
 ### 05-21 - Debugging Echo encode
 Fixed like 30 syntax bugs, cleaned up the code, made every parameter in a WAV file print, still need to test if it works by creating a working decode - 1 hour
+
+### 05-22 - Started Echo decode
+
+Finished debugging echo encode (hopefully) - 15 mins
+Wrote starter working code for echo decode (need to test more extensively) - 1 hour
+Replaced compare bits function with correlate from numpy - 15 mins

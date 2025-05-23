@@ -56,8 +56,20 @@ def decode(pathToFile):
         numFrames = wavDescriptor.getnframes()
         delay1 = int(frameRate / 1000)  # 1ms
         delay2 = int(frameRate / 500)   # 2ms
-        for i in range(0, len(samples), 
+        windowSize = 2 * delay2
+        for i in range(messageLength * 8):
+            start = i * window_size
+            end = start + window_size
+            if end > len(audioData):
+                break
+            segment = audioData[start:end]
+            corr = correlate(segment, segment, mode='full')
+            mid = len(corr) // 2
+            delay1_corr = corr[mid + delay1]
+            delay2_corr = corr[mid + delay2]
 
+            bit = 0 if delay1_corr > delay2_corr else 1
+            bits.append(bit)
 if __name__ == "__main__":
     if(sys.argv[1] == "encodeDelay"):
         encodeDelay(sys.argv[2], sys.argv[3], sys.argv[4])
