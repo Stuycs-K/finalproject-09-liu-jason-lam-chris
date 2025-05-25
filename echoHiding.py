@@ -73,12 +73,21 @@ def decode(pathToFile, messageLength):
             delay1_corr = corr[mid + delay1]
             delay2_corr = corr[mid + delay2]
 
-            bit = 0 if delay1_corr > delay2_corr else 1
-            bits.append(bit)
+            if delay1_corr > delay2_corr:
+                bits.append(0)
+            else:
+                bits.append(1)
+        decodedMessage = bitsToString(bits)
+        print("Decoded Message:", decoded)
+def bitsToString(bits):
+    chars = []
     for i in range(0, len(bits), 8):
-        bitarr = [bits[i], bits[i + 1], bits[i + 2], bits[i + 3], bits[i + 4], bits[i + 5], bits[i + 6], bits[i + 7]]
-        bitString = "".join(str(bit) for bit in bitarr)
-        print(char(int(bitString, 2)))
+        byte = bits[i:i+8]
+        if len(byte) < 8:
+            break
+        val = sum([(bit << (7 - j)) for j, bit in enumerate(byte)])
+        chars.append(chr(val))
+    return ''.join(chars)
 
 if __name__ == "__main__":
     if(sys.argv[1] == "encodeDelay"):
