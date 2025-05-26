@@ -1,4 +1,3 @@
-
 import wave
 import numpy as np
 import sys
@@ -24,76 +23,76 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
         audioData = np.frombuffer(frames, dtype=np.int16)
         copyData = np.copy(audioData)
 
-        delay0 = int(frameRate / 100)   # 10ms
-        delay1 = int(frameRate / 50)    # 20ms
-        attenuation = 0.5               # echo strength
+        delay0 = int(frameRate / 100)   # 10ms delay for bit 0
+        delay1 = int(frameRate / 50)    # 20ms delay for bit 1
+        blockSize = delay1 * 2
+        attenuation = 0.6               # strength of echo
+        pilot_len = 100                 # small impulse to help detection
 
-        if channels == 1:
-            blockSize = delay1 * 2
-            for i in range(len(bits)):
-                start = i * blockSize
-                end = start + blockSize
-                if end + delay1 >= len(copyData):  # ensure we don't go out of bounds
-                    break
-                segment = audioData[start:end]
+        if channels != 1:
+            raise ValueError("Only mono audio supported.")
 
-                # Inject echo at the correct delay
-                if bits[i] == 0:
-                    for j in range(len(segment)):
-                        if start + delay0 + j < len(copyData):
-                            copyData[start + delay0 + j] += int(attenuation * segment[j])
-                else:
-                    for j in range(len(segment)):
-                        if start + delay1 + j < len(copyData):
-                            copyData[start + delay1 + j] += int(attenuation * segment[j])
+        for i, bit in enumerate(bits):
+            start = i * blockSize
+            end = start + blockSize
+            if end + delay1 >= len(copyData):  # ensure bounds
+                break
 
+            segment = audioData[start:end]
+
+            # 1. Inject pilot impulse (optional but improves detection)
+            for j in range(min(pilot_len, len(segment))):
+                copyData[start + j] += int(0.8 * segment[j])
+
+            # 2. Inject echo
+            delay = delay0 if bit == 0 else delay1
+            for j in range(len(segment)):
+                dst = start + delay + j
+                if dst < len(copyData):
+                    copyData[dst] += int(attenuation * segment[j])
+
+        # Clip to valid range
         copyData = np.clip(copyData, -32768, 32767)
 
+        # Write the output WAV
         with wave.open(outputFile, 'wb') as writeFile:
             writeFile.setparams(wavDescriptor.getparams())
             writeFile.writeframes(copyData.astype(np.int16).tobytes())
 
 def decode(pathToFile, messageLength):
-    messageLength = int(messageLength)
+    messageLength = int(messageLength
     bits = []
+    with wave.open(pathToFile, 'rb') as w:
+        fr = w.getframerate()
+        data = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
 
-    with wave.open(pathToFile, 'rb') as wavDescriptor:
-        channels = wavDescriptor.getnchannels()
-        sampleWidth = wavDescriptor.getsampwidth()
-        frameRate = wavDescriptor.getframerate()
-        numFrames = wavDescriptor.getnframes()
+    delay0 = int(fr/100)    # 10ms
+    delay1 = int(fr/50)     # 20ms
+    blockSize = delay1*2
 
-        frames = wavDescriptor.readframes(numFrames)
-        audioData = np.frombuffer(frames, dtype=np.int16)
+    for i in range(messageLength*8):
+        start = i*blockSize
+        end = start+blockSize
+        if end > len(data): break
+        seg = data[start:end]
+        L = blockSize - delay1
 
-        delay0 = int(frameRate / 100)   # 10ms
-        delay1 = int(frameRate / 50)    # 20ms
-        blockSize = delay1 * 2
+        # compute cross-energies
+        e0 = np.dot(seg[:L],    seg[delay0:delay0+L])
+        e1 = np.dot(seg[:L],    seg[delay1:delay1+L])
 
-        for i in range(messageLength * 8):
-            start = i * blockSize
-            end = start + blockSize
-            if end > len(audioData):
-                break
+        bits.append(0 if e0 > e1 else 1)
 
-            segment = audioData[start:end]
-            if np.max(np.abs(segment)) < 500:  # optional: skip silent segments
-                bits.append(0)
-                continue
-
-            corr = scipy.signal.correlate(segment, segment, mode='full')
-            mid = len(corr) // 2
-
-            corr_at_delay0 = corr[mid + delay0]
-            corr_at_delay1 = corr[mid + delay1]
-
-            if corr_at_delay0 > corr_at_delay1:
-                bits.append(0)
-            else:
-                bits.append(1)
-
-    decodedMessage = bitsToString(bits)
-    print("Decoded Message:", decodedMessage)
+    # bits → string
+    chars = []
+    for i in range(0, len(bits), 8):
+        byte = bits[i:i+8]
+        if len(byte) < 8: break
+        val = sum([b << (7-j) for j,b in enumerate(byte)])
+        chars.append(chr(val))
+    msg = ''.join(chars)
+    print("Decoded Message:", msg)
+    return msg
         
 def bitsToString(bits):
     chars = []
