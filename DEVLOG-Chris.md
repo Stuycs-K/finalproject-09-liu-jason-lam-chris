@@ -50,3 +50,12 @@ Fixed like 30 syntax bugs, cleaned up the code, made every parameter in a WAV fi
 Finished debugging echo encode (hopefully) - 15 mins
 Wrote starter working code for echo decode (need to test more extensively) - 1 hour
 Replaced compare bits function with correlate from numpy - 15 mins
+
+### 05-23 - Finished Echo Decode
+
+Basically rewrote my previous decode by basically breaking audio to segments
+Read more on this report on signals 
+
+### 05-24 + 05-25 - I am in so much pain (Echo Decode and maybe encode don't work at all)
+
+why why why why why why why - 5 hours (ongoing)
