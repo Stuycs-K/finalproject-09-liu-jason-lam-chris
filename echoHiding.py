@@ -1,3 +1,4 @@
+
 import wave
 import numpy as np
 import sys
@@ -19,27 +20,32 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
         frameRate = wavDescriptor.getframerate()
         numFrames = wavDescriptor.getnframes()
 
-        print(channels)
-        print(sampleWidth)
-        print(frameRate)
-        print(numFrames)
-
         frames = wavDescriptor.readframes(numFrames)
-
         audioData = np.frombuffer(frames, dtype=np.int16)
         copyData = np.copy(audioData)
 
-        if channels == 1:
-            delay1 = int(frameRate / 1000)  # 1ms
-            delay2 = int(frameRate / 500)   # 2ms
+        delay0 = int(frameRate / 100)   # 10ms
+        delay1 = int(frameRate / 50)    # 20ms
+        attenuation = 0.5               # echo strength
 
+        if channels == 1:
+            blockSize = delay1 * 2
             for i in range(len(bits)):
-                if bits[i] == 0 and i + delay1 < len(copyData):
-                    copyData[i + delay1] += int(audioData[i] * 0.25)
-                elif bits[i] == 1 and i + delay2 < len(copyData):
-                    copyData[i + delay2] += int(audioData[i] * 0.25)
+                start = i * blockSize
+                end = start + blockSize
+                if end + delay1 >= len(copyData):  # ensure we don't go out of bounds
+                    break
+                segment = audioData[start:end]
+
+                # Inject echo at the correct delay
+                if bits[i] == 0:
+                    for j in range(len(segment)):
+                        if start + delay0 + j < len(copyData):
+                            copyData[start + delay0 + j] += int(attenuation * segment[j])
                 else:
-                    print("Index out of bounds or invalid bit")
+                    for j in range(len(segment)):
+                        if start + delay1 + j < len(copyData):
+                            copyData[start + delay1 + j] += int(attenuation * segment[j])
 
         copyData = np.clip(copyData, -32768, 32767)
 
@@ -47,38 +53,48 @@ def encodeDelay(pathToFile, dataToHide, outputFile):
             writeFile.setparams(wavDescriptor.getparams())
             writeFile.writeframes(copyData.astype(np.int16).tobytes())
 
-##def encodeAmplitude
-
 def decode(pathToFile, messageLength):
     messageLength = int(messageLength)
     bits = []
+
     with wave.open(pathToFile, 'rb') as wavDescriptor:
         channels = wavDescriptor.getnchannels()
         sampleWidth = wavDescriptor.getsampwidth()
         frameRate = wavDescriptor.getframerate()
         numFrames = wavDescriptor.getnframes()
-        delay1 = int(frameRate / 1000)  # 1ms
-        delay2 = int(frameRate / 500)   # 2ms
-        windowSize = 2 * delay2
+
         frames = wavDescriptor.readframes(numFrames)
         audioData = np.frombuffer(frames, dtype=np.int16)
+
+        delay0 = int(frameRate / 100)   # 10ms
+        delay1 = int(frameRate / 50)    # 20ms
+        blockSize = delay1 * 2
+
         for i in range(messageLength * 8):
-            start = i * windowSize
-            end = start + windowSize
+            start = i * blockSize
+            end = start + blockSize
             if end > len(audioData):
                 break
-            segment = audioData[start:end]
-            corr = correlate(segment, segment, mode='full')
-            mid = len(corr) // 2
-            delay1_corr = corr[mid + delay1]
-            delay2_corr = corr[mid + delay2]
 
-            if delay1_corr > delay2_corr:
+            segment = audioData[start:end]
+            if np.max(np.abs(segment)) < 500:  # optional: skip silent segments
+                bits.append(0)
+                continue
+
+            corr = scipy.signal.correlate(segment, segment, mode='full')
+            mid = len(corr) // 2
+
+            corr_at_delay0 = corr[mid + delay0]
+            corr_at_delay1 = corr[mid + delay1]
+
+            if corr_at_delay0 > corr_at_delay1:
                 bits.append(0)
             else:
                 bits.append(1)
-        decodedMessage = bitsToString(bits)
-        print("Decoded Message:", decoded)
+
+    decodedMessage = bitsToString(bits)
+    print("Decoded Message:", decodedMessage)
+        
 def bitsToString(bits):
     chars = []
     for i in range(0, len(bits), 8):
