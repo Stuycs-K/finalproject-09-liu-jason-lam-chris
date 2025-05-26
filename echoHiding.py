@@ -3,109 +3,87 @@ import numpy as np
 import sys
 import scipy.signal
 
-def dataToBits(dataToHide):
+def data_to_bits(msg):
     bits = []
-    for char in dataToHide:
-        val = ord(char)
-        bits.extend([(val >> i) & 1 for i in range(7, -1, -1)])
+    for c in msg:
+        b = ord(c)
+        bits += [(b >> i) & 1 for i in range(7, -1, -1)]
     return np.array(bits, dtype=np.uint8)
 
-def encodeDelay(pathToFile, dataToHide, outputFile):
-    bits = dataToBits(dataToHide)
-
-    with wave.open(pathToFile, 'rb') as wavDescriptor:
-        channels = wavDescriptor.getnchannels()
-        sampleWidth = wavDescriptor.getsampwidth()
-        frameRate = wavDescriptor.getframerate()
-        numFrames = wavDescriptor.getnframes()
-
-        frames = wavDescriptor.readframes(numFrames)
-        audioData = np.frombuffer(frames, dtype=np.int16)
-        copyData = np.copy(audioData)
-
-        delay0 = int(frameRate / 100)   # 10ms delay for bit 0
-        delay1 = int(frameRate / 50)    # 20ms delay for bit 1
-        blockSize = delay1 * 2
-        attenuation = 0.6               # strength of echo
-        pilot_len = 100                 # small impulse to help detection
-
-        if channels != 1:
-            raise ValueError("Only mono audio supported.")
-
-        for i, bit in enumerate(bits):
-            start = i * blockSize
-            end = start + blockSize
-            if end + delay1 >= len(copyData):  # ensure bounds
-                break
-
-            segment = audioData[start:end]
-
-            # 1. Inject pilot impulse (optional but improves detection)
-            for j in range(min(pilot_len, len(segment))):
-                copyData[start + j] += int(0.8 * segment[j])
-
-            # 2. Inject echo
-            delay = delay0 if bit == 0 else delay1
-            for j in range(len(segment)):
-                dst = start + delay + j
-                if dst < len(copyData):
-                    copyData[dst] += int(attenuation * segment[j])
-
-        # Clip to valid range
-        copyData = np.clip(copyData, -32768, 32767)
-
-        # Write the output WAV
-        with wave.open(outputFile, 'wb') as writeFile:
-            writeFile.setparams(wavDescriptor.getparams())
-            writeFile.writeframes(copyData.astype(np.int16).tobytes())
-
-def decode(pathToFile, messageLength):
-    messageLength = int(messageLength
-    bits = []
-    with wave.open(pathToFile, 'rb') as w:
-        fr = w.getframerate()
-        data = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
-
-    delay0 = int(fr/100)    # 10ms
-    delay1 = int(fr/50)     # 20ms
-    blockSize = delay1*2
-
-    for i in range(messageLength*8):
-        start = i*blockSize
-        end = start+blockSize
-        if end > len(data): break
-        seg = data[start:end]
-        L = blockSize - delay1
-
-        # compute cross-energies
-        e0 = np.dot(seg[:L],    seg[delay0:delay0+L])
-        e1 = np.dot(seg[:L],    seg[delay1:delay1+L])
-
-        bits.append(0 if e0 > e1 else 1)
-
-    # bits → string
+def bits_to_string(bits):
     chars = []
     for i in range(0, len(bits), 8):
         byte = bits[i:i+8]
         if len(byte) < 8: break
-        val = sum([b << (7-j) for j,b in enumerate(byte)])
-        chars.append(chr(val))
-    msg = ''.join(chars)
-    print("Decoded Message:", msg)
-    return msg
-        
-def bitsToString(bits):
-    chars = []
-    for i in range(0, len(bits), 8):
-        byte = bits[i:i+8]
-        if len(byte) < 8:
-            break
-        val = sum([(bit << (7 - j)) for j, bit in enumerate(byte)])
+        val = sum(bit << (7-j) for j, bit in enumerate(byte))
         chars.append(chr(val))
     return ''.join(chars)
 
+def encode(input_wav, message, output_wav):
+    bits = data_to_bits(message)
+    with wave.open(input_wav,'rb') as wf:
+        params = wf.getparams()
+        fs = wf.getframerate()
+        data = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int32)
+
+    # Parameters
+    d0 = int(fs * 0.03)   # 10ms
+    d1 = int(fs * 0.06)   # 20ms
+    pilot_len = 256       # samples
+    pilot_gain = 1.0      # full-strength pilot
+    echo_gain  = 0.6      # echo of pilot only
+    block = pilot_len + max(d0, d1) + pilot_len
+
+    out = data.copy()
+    for i, bit in enumerate(bits):
+        start = i * block
+        if start + block >= len(data): break
+        pilot = data[start:start+pilot_len]
+
+        # 1) Inject pilot (strong)
+        out[start:start+pilot_len] += (pilot_gain * pilot).astype(np.int16)
+
+        # 2) Echo pilot at delay
+        delay = d0 if bit==0 else d1
+        pos = start + delay
+        out[pos:pos+pilot_len] += (echo_gain * pilot).astype(np.int16)
+
+    out = np.clip(out, -32768, 32767).astype(np.int16)
+    with wave.open(output_wav,'wb') as wf:
+        wf.setparams(params)
+        wf.writeframes(out.tobytes())
+    print("Encoded.")
+
+def decode(input_wav, msg_len):
+    with wave.open(input_wav,'rb') as wf:
+        fs = wf.getframerate()
+        data = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int32)
+
+    d0 = int(fs * 0.03)
+    d1 = int(fs * 0.06)
+    pilot_len = 256
+    block = pilot_len + max(d0, d1) + pilot_len
+
+    bits = []
+    for i in range(msg_len * 8):
+        start = i * block
+        if start + block >= len(data): break
+        pilot = data[start:start+pilot_len]
+        seg0  = data[start+d0 : start+d0+pilot_len]
+        seg1  = data[start+d1 : start+d1+pilot_len]
+
+        e0 = np.dot(pilot, seg0)
+        e1 = np.dot(pilot, seg1)
+        bits.append(0 if e0 > e1 else 1)
+        print(f"Block {i}: e0={e0}, e1={e1}")
+    msg = bits_to_string(bits)
+    print("Decoded:", msg)
+    return msg
+
 if __name__ == "__main__":
-    if(sys.argv[1] == "encodeDelay"):
-        encodeDelay(sys.argv[2], sys.argv[3], sys.argv[4])
-    elif(sys.argv[1] == "decode"):
-        decode(sys.argv[2], sys.argv[3])
+    if sys.argv[1]=="encode":
+        encode(sys.argv[2], sys.argv[3], sys.argv[4])
+    elif sys.argv[1]=="decode":
+        decode(sys.argv[2], int(sys.argv[3]))
+    else:
+        print("Usage: encode <in.wav> <msg> <out.wav> | decode <in.wav> <len>")
