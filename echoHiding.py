@@ -1,87 +1,55 @@
 import wave
 import numpy as np
 import sys
-import scipy.signal
 
-def dataToBits(dataToHide):
+def encode(in_wav, message, out_wav, delay=500, amp_0=0.05, amp_1=0.25):
+    with wave.open(in_wav, 'rb') as wf:
+        params = wf.getparams()
+        audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
+
+    bits = [int(b) for c in message for b in f"{ord(c):08b}"]
+    print("Encoding bits:", bits)
+
+    block = 2 * delay
+    for i, bit in enumerate(bits):
+        start = i * block
+        if start + block >= len(audio):
+            print(f"Block {i} truncated, skipping")
+            break
+        amp = amp_1 if bit else amp_0
+        for j in range(delay):
+            audio[start + delay + j] += amp * audio[start + j]
+
+    audio = np.clip(audio, -32768, 32767).astype(np.int16)
+    with wave.open(out_wav, 'wb') as wf:
+        wf.setparams(params)
+        wf.writeframes(audio.tobytes())
+    print("Encoding done.")
+
+def decode(in_wav, num_bytes, delay=500):
+    with wave.open(in_wav, 'rb') as wf:
+        audio = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32)
+
     bits = []
-    for char in dataToHide:
-        val = ord(char)
-        bits.extend([(val >> i) & 1 for i in range(7, -1, -1)])
-    return np.array(bits, dtype=np.uint8)
+    block = 2 * delay
+    for i in range(num_bytes * 8):
+        start = i * block
+        if start + block >= len(audio):
+            break
+        x = audio[start:start + delay]
+        y = audio[start + delay:start + 2 * delay]
+        e0 = np.dot(x, x)
+        e1 = np.dot(y, x)
+        bit = 1 if abs(e1) > abs(e0) else 0
+        print(f"Block {i}: e0={e0:.1f}, e1={e1:.1f} -> bit={bit}")
+        bits.append(bit)
 
-def encodeDelay(pathToFile, dataToHide, outputFile):
-    bits = dataToBits(dataToHide)
+    chars = [chr(int("".join(map(str, bits[i:i+8])), 2)) for i in range(0, len(bits), 8)]
+    print("Decoded message:", ''.join(chars))
 
-    with wave.open(pathToFile, 'rb') as wavDescriptor:
-        channels = wavDescriptor.getnchannels()
-        sampleWidth = wavDescriptor.getsampwidth()
-        frameRate = wavDescriptor.getframerate()
-        numFrames = wavDescriptor.getnframes()
-
-        print(channels)
-        print(sampleWidth)
-        print(frameRate)
-        print(numFrames)
-
-        frames = wavDescriptor.readframes(numFrames)
-
-        audioData = np.frombuffer(frames, dtype=np.int16)
-        copyData = np.copy(audioData)
-
-        if channels == 1:
-            delay1 = int(frameRate / 1000)  # 1ms
-            delay2 = int(frameRate / 500)   # 2ms
-
-            for i in range(len(bits)):
-                if bits[i] == 0 and i + delay1 < len(copyData):
-                    copyData[i + delay1] += int(audioData[i] * 0.25)
-                elif bits[i] == 1 and i + delay2 < len(copyData):
-                    copyData[i + delay2] += int(audioData[i] * 0.25)
-                else:
-                    print("Index out of bounds or invalid bit")
-
-        copyData = np.clip(copyData, -32768, 32767)
-
-        with wave.open(outputFile, 'wb') as writeFile:
-            writeFile.setparams(wavDescriptor.getparams())
-            writeFile.writeframes(copyData.astype(np.int16).tobytes())
-
-##def encodeAmplitude
-
-def decode(pathToFile, messageLength):
-    messageLength = int(messageLength)
-    bits = []
-    with wave.open(pathToFile, 'rb') as wavDescriptor:
-        channels = wavDescriptor.getnchannels()
-        sampleWidth = wavDescriptor.getsampwidth()
-        frameRate = wavDescriptor.getframerate()
-        numFrames = wavDescriptor.getnframes()
-        delay1 = int(frameRate / 1000)  # 1ms
-        delay2 = int(frameRate / 500)   # 2ms
-        windowSize = 2 * delay2
-        frames = wavDescriptor.readframes(numFrames)
-        audioData = np.frombuffer(frames, dtype=np.int16)
-        for i in range(messageLength * 8):
-            start = i * windowSize
-            end = start + windowSize
-            if end > len(audioData):
-                break
-            segment = audioData[start:end]
-            corr = correlate(segment, segment, mode='full')
-            mid = len(corr) // 2
-            delay1_corr = corr[mid + delay1]
-            delay2_corr = corr[mid + delay2]
-
-            bit = 0 if delay1_corr > delay2_corr else 1
-            bits.append(bit)
-    for i in range(0, len(bits), 8):
-        bitarr = [bits[i], bits[i + 1], bits[i + 2], bits[i + 3], bits[i + 4], bits[i + 5], bits[i + 6], bits[i + 7]]
-        bitString = "".join(str(bit) for bit in bitarr)
-        print(char(int(bitString, 2)))
-
+# CLI
 if __name__ == "__main__":
-    if(sys.argv[1] == "encodeDelay"):
-        encodeDelay(sys.argv[2], sys.argv[3], sys.argv[4])
-    elif(sys.argv[1] == "decode"):
-        decode(sys.argv[2], sys.argv[3])
+    if sys.argv[1] == "encode":
+        encode(sys.argv[2], sys.argv[3], sys.argv[4])
+    elif sys.argv[1] == "decode":
+        decode(sys.argv[2], int(sys.argv[3]))
