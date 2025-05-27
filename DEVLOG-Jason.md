@@ -61,3 +61,7 @@ Will work on decoder tomorrow
 
 Made decoder and realized encoder does not work so I need to switch approaches as my current one doesn't work
 Did research on other method using DFT so imma try that tmrw
+
+### 2024-05-26 - Testing on Phase Encoding
+
+Did some testing to little to no sucess so no commits
