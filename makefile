@@ -1,4 +1,4 @@
-.PHONY:
+.PHONY: lsb echo create convert embed clean
 usage:
 	@echo "There are 5 programs avaliable for different types of audio steganography. Listed below are descriptions and how to use them.\n"
 	@echo "First function is lsb (Least Significant Bit) encoding and decoding.\n     make lsb ARGS=\"encode PathtoAudio Message OutputName\"\n     make lsb ARGS=\"decode PathtoAudio NumberofBytes\"\n"
