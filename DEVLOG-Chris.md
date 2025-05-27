@@ -59,3 +59,8 @@ Read more on this report on signals
 ### 05-24 + 05-25 - I am in so much pain (Echo Decode and maybe encode don't work at all)
 
 why why why why why why why - 5 hours (ongoing)
+
+
+### 05-26 Rewrote basically EVERYTHING from scratch
+
+After yesterday, I spent like 4 hours rewriting and testing my new Echo encode and decode and on how to create a sinusoid WAV file. (This time I used dot products w/ the amplitudes of each segment)
