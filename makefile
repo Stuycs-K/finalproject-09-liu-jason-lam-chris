@@ -4,8 +4,8 @@ usage:
 	@echo "First function is lsb (Least Significant Bit) encoding and decoding.\n     make lsb ARGS=\"encode PathtoAudio Message OutputName\"\n     make lsb ARGS=\"decode PathtoAudio NumberofBytes\"\n"
 	@echo "Second function is Echo Hiding encoding and decoding.\n     make echo ARGS=\"encode PathtoAudio Message OutputName\"\n     make echo ARGS=\"decode PathtoAudio NumberofBytes\"\n"
 	@echo "Third function is Wav Create which is needed to create the input file for echo hiding.\n     make create\n"
-	@echo "Fourth function is Image to Audio Conversion.\n     make convert ARGS=\"ImageName OutputName ColorPriorityMode VisibilityPercentage TimeResolutionMultiplier FrequencyResolutionMultiplier\"\n"
-	@echo "Fifth function is Image embedding into Audio.\n     make embed ARGS=\"ImageName AudioName OutputName ImageHeight ImageLength ImageStartX ImageStartY ColorPriorityMode VisibilityPercentage TimeResolutionMultiplier FrequencyResolutionMultiplier\"\n"
+	@echo "Fourth function is Image to Audio Conversion.\n     make convert ARGS=\"ImageName OutputName ColorPriorityMode VisibilityPercentage TimeResolutionMultiplier FrequencyResolutionMultiplier\"\n\n    ColorPriorityMode should be Dark or Light\n"
+	@echo "Fifth function is Image embedding into Audio.\n     make embed ARGS=\"ImageName AudioName OutputName ImageHeight ImageLength ImageStartX ImageStartY ColorPriorityMode VisibilityPercentage TimeResolutionMultiplier FrequencyResolutionMultiplier\"\n\n    ColorPriorityMode should be Dark or Light\n"
 compile:
 	javac lsb.java
 lsb:
