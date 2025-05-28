@@ -65,3 +65,7 @@ Did research on other method using DFT so imma try that tmrw
 ### 2024-05-26 - Testing on Phase Encoding
 
 Did some testing to little to no sucess so no commits
+
+### 2024-05-27 - Did makefile and README
+
+Same as title
