@@ -54,7 +54,7 @@ Replaced compare bits function with correlate from numpy - 15 mins
 ### 05-23 - Finished Echo Decode
 
 Basically rewrote my previous decode by basically breaking audio to segments
-Read more on this report on signals 
+Read more on this report on signals
 
 ### 05-24 + 05-25 - I am in so much pain (Echo Decode and maybe encode don't work at all)
 
@@ -68,3 +68,5 @@ After yesterday, I spent like 4 hours rewriting and testing my new Echo encode a
 ### 05-27 Created Slides
 Fixed formatting error on LSB
 Created and worked on the slideshow, done with explaining different types of audio files
+
+### 05-28 Updated slides
