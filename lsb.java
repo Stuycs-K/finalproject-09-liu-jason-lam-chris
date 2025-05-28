@@ -84,7 +84,7 @@ public static void modifyWav(int[] messageArray, byte[]fileArray, String fileNam
 	byte[] modifiedArray = fileArray.clone();
 
 	for(int i = 0; i < messageArray.length; i++){
-		modifiedArray[i + 96] = (byte)((fileArray[i] & 252) | messageArray[i]);
+		modifiedArray[i + 44] = (byte)((fileArray[i] & 252) | messageArray[i]);
 	}
 	try(FileOutputStream out = new FileOutputStream(fileName)){
 		out.write(modifiedArray);
@@ -94,7 +94,7 @@ public static void modifyWav(int[] messageArray, byte[]fileArray, String fileNam
 }
 
 public static void decode(byte[] audioBytes, int numOfBytes){
-	for(int i = 96; i < (numOfBytes) + 96; i = i + 4){
+	for(int i = 44; i < (numOfBytes) + 44; i = i + 4){
 		//System.out.println("daha");
 		int temp = audioBytes[i] & 3;
 		int temp2 = audioBytes[i + 1] & 3;
