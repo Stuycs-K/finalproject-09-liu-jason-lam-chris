@@ -68,4 +68,5 @@ Did some testing to little to no sucess so no commits
 
 ### 2024-05-27 - Did makefile and README
 
+### 2024-05-28 - Finished slides and recorded video
 Same as title
