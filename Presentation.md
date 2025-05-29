@@ -43,9 +43,13 @@ Nyquist–Shannon sampling theorem - smart person said that to accurately recrea
 In NUMPY we trust
 
 y = A sin(ωt + φ)
+
 A: amplitude 
+
 ω: angular frequency (2π* frequency)
+
 t: time
+
 φ: phase 
 
 samples = (amplitude * np.sin(2 * np.pi * freq * t))
