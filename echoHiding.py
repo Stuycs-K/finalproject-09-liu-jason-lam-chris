@@ -2,8 +2,8 @@ import wave
 import numpy as np
 import sys
 
-def encode(in_wav, message, out_wav, delay=500, amp_0=0.05, amp_1=0.25):
-    with wave.open(in_wav, 'rb') as wf:
+def encode(inWav, message, outWav, delay=500, amp0=0.05, amp1=0.25):
+    with wave.open(inWav, 'rb') as wf:
         params = wf.getparams()
         audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
 
@@ -16,20 +16,19 @@ def encode(in_wav, message, out_wav, delay=500, amp_0=0.05, amp_1=0.25):
         if start + block >= len(audio):
             print(f"Block {i} truncated, skipping")
             break
-        amp = amp_1 if bit else amp_0
+        amp = amp1 if bit else amp0
         for j in range(delay):
             audio[start + delay + j] += amp * audio[start + j]
 
     audio = np.clip(audio, -32768, 32767).astype(np.int16)
-    with wave.open(out_wav, 'wb') as wf:
+    with wave.open(outWav, 'wb') as wf:
         wf.setparams(params)
         wf.writeframes(audio.tobytes())
     print("Encoding done.")
 
-def decode(in_wav, num_bytes, delay=500):
-    with wave.open(in_wav, 'rb') as wf:
+def decode(inWav, num_bytes, delay=500):
+    with wave.open(inWav, 'rb') as wf:
         audio = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32)
-
     bits = []
     block = 2 * delay
     for i in range(num_bytes * 8):
@@ -37,7 +36,7 @@ def decode(in_wav, num_bytes, delay=500):
         if start + block >= len(audio):
             break
         x = audio[start:start + delay]
-        y = audio[start + delay:start + 2 * delay]
+        y = audio[start + delay:start+ 2 * delay]
         e0 = np.dot(x, x)
         e1 = np.dot(y, x)
         bit = 1 if abs(e1) > abs(e0) else 0
