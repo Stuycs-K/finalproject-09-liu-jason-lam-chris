@@ -24,33 +24,23 @@ MPEG-4 Part 14 (MP4)
 
 ### Glossary
 
-Sampling Rate - Samples per one second (Hz)
-
-Sample - Amplitude of waveform at a given time (Higher amplitude = louder sounds)
-
-Channels - Audio steam 
-
-Mono - 1 channel
-
-Stereo - 2 channel
-
-Frame - Set of samples at a given time
+- Sampling Rate - Samples per one second (Hz)
+- Sample - Amplitude of waveform at a given time (Higher amplitude = louder sounds)
+- Channels - Audio steam 
+- Mono - 1 channel
+- Stereo - 2 channel
+- Frame - Set of samples at a given time
 
 Nyquist–Shannon sampling theorem - smart person said that to accurately recreate a WAV, sampling rate should be at least twice the highest frequency 
 
 ### Generate Wav
 
 In NUMPY we trust
-
-y = A sin(ωt + φ)
-
-A: amplitude 
-
-ω: angular frequency (2π* frequency)
-
-t: time
-
-φ: phase 
+- y = A sin(ωt + φ)
+- A: amplitude 
+- ω: angular frequency (2π* frequency)
+- t: time
+- φ: phase 
 
 samples = (amplitude * np.sin(2 * np.pi * freq * t))
 
@@ -74,18 +64,14 @@ Take segments of the original audio, delay the segments using one of two predefi
 The distinct time intervals correspond to what bits will be turned on when decoding
 
 What if I don’t have the original audio?
-
-You cry
-
-Autocorrelation
+- You cry
+- Autocorrelation
 
 ### Echo Hiding Pt 2
 
 Phase changes are harder for human ears to perceive 
-
-Remember Ohm? Ohm’s Acoustic Law (we analyze sounds through frequency)
-
-Temporal masking (loud sound masks quiet sound)
+- Remember Ohm? Ohm’s Acoustic Law (we analyze sounds through frequency)
+- Temporal masking (loud sound masks quiet sound)
 
 Decode:	
 - Loop through the segments
@@ -126,7 +112,7 @@ A Spectrogram consists of a set of 2D arrays
 - Combine new Magnitude with original phase
 Save Audio
 
-###Image-Audio Embedding
+### Image-Audio Embedding
 
 Images can also be embedded within the spectrogram of an audio file.
 
