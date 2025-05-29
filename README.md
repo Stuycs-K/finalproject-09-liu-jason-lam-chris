@@ -19,6 +19,8 @@ The methods are as follows:
 
 https://drive.google.com/file/d/1fZaOhUUxZ2ekLnjS57zVRxByJUe3bSnx/view?usp=sharing
 
+Zoom scuffed up the recording for some reason so lower portion of screen was a bit cut off.
+
 ### Instructions:
 
 All the utility is listed under the make file as default or make usage.
