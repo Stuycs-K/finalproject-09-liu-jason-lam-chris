@@ -70,3 +70,13 @@ Fixed formatting error on LSB
 Created and worked on the slideshow, done with explaining different types of audio files
 
 ### 05-28 Updated slides
+
+Finished slides and spent ~1 hour recording, though I need to redo my recording tomorrow because I keep blanking out.
+
+### 05-29 - Wrote a script for the slides, finished recording.
+
+In title.
+
+### 05-30 - FIXED ECHOHIDING YES
+
+Finally fixed a bug where I did not amplify the original segment with the 0 bit amplitude.
