@@ -2,7 +2,7 @@ import wave
 import numpy as np
 import sys
 
-def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=0.25):
+def encode(inWav, message, outWAV, delay=500, amp0=0.4, amp1=0.8):
     with wave.open(inWav, 'rb') as wf:
         params = wf.getparams()
         audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
@@ -36,7 +36,7 @@ def decode(inWav, num_bytes, delay=500):
         start = i * block
         if start + block >= len(audio):
             break
-        x = audio[start:start + delay]
+        x = audio[start:start + delay] * 1.4    
         print("THIS IS X:", len(x))
         y = audio[start + delay:start+ 2 * delay]
         print("THIS IS Y:", len(y))
