@@ -21,6 +21,10 @@ https://drive.google.com/file/d/15zl53tLId5RjmunLWLDLJRGcOCXgA6Vr/view?usp=shari
 
 Zoom scuffed up the recording for some reason so lower portion of screen was a bit cut off.
 
+Additional Video bc I made phase encoding
+
+https://drive.google.com/file/d/1rCaid1d78tIqtwH-TndQ0458Hz2H4U5P/view?usp=sharing 
+
 ### Instructions:
 
 All the utility is listed under the make file as default or make usage.
