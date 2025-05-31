@@ -8,7 +8,8 @@ def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=0.25):
         audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
 
     bits = [int(b) for c in message for b in f"{ord(c):08b}"]
-    print("Encoding bits:", bits)
+    print("Number of bits encoded:", int(len(bits) / 8))
+
 
     block = 2 * delay
     for i, bit in enumerate(bits):
@@ -28,14 +29,14 @@ def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=0.25):
 
 def decode(inWav, num_bytes, delay=500):
     with wave.open(inWav, 'rb') as wf:
-        audio = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32)
+        audio = np.clip(np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32), -32768, 32767)
     bits = []
     block = 2 * delay
     for i in range(num_bytes * 8):
         start = i * block
         if start + block >= len(audio):
             break
-        x = audio[start:start + delay]
+        x = audio[start:start + delay] * 1.05
         y = audio[start + delay:start+ 2 * delay]
         e0 = np.dot(x, x)
         e1 = np.dot(y, x)
