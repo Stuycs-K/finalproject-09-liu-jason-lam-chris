@@ -28,36 +28,34 @@ win_length = n_fft
 window = 'hann'
 
 if mode == "encode":
-# --- First block: create and modify audio ---
-
-    string = "a"
-
+    string = " \x00\x7f\x80\xff"
     bits = [int(bit) for char in string for bit in format(ord(char), '08b')]
-    
+
     print(bits)
     print(len(bits))
 
     y, sr = librosa.load("clean.wav", sr=None)
 
-    # STFT of original
     D_orig = librosa.stft(y, n_fft=n_fft, hop_length=hop_length, win_length=win_length, window=window)
     magnitude_orig, phase_orig = np.abs(D_orig), np.angle(D_orig)
 
-    # Modify phase
     phase_mod = phase_orig.copy()
-    for i, bit in enumerate(bits):
-        if bit == 1:
-            phase_mod[i, :] += np.pi  # Add pi
 
-    # Rebuild modified complex spectrum
+    buckets_per_bit = 5
+    for i, bit in enumerate(bits):
+        start = i * buckets_per_bit
+        end = start + buckets_per_bit
+        if end > phase_orig.shape[1]:
+            break
+        if bit == 1:
+            phase_mod[:, start:end] += np.pi  # Apply π shift to 5 frames
+
     D_mod = magnitude_orig * np.exp(1j * phase_mod)
     y_mod = librosa.istft(D_mod, hop_length=hop_length, win_length=win_length, window=window)
 
-    # Save modified audio
     sf.write("output.wav", y_mod, sr)
 
 if mode == "decode":
-# --- Second block: load modified audio and get new phase ---
     y, sr = librosa.load("clean.wav", sr=None)
     D_orig = librosa.stft(y, n_fft=n_fft, hop_length=hop_length, win_length=win_length, window=window)
     _, phase_orig = np.abs(D_orig), np.angle(D_orig)
@@ -68,27 +66,32 @@ if mode == "decode":
 
     reconstructedBits = []
 
-    # --- Check phase difference ---
-    # We'll compare only the first 8 frequency bins used by the bits
-    for i in range(8):
-        diff = (phase_reloaded[i, :] - phase_orig[i, :] + np.pi) % (2 * np.pi) - np.pi
+    buckets_per_bit = 5
+    total_time_buckets = phase_orig.shape[1]
+    total_bits = total_time_buckets // buckets_per_bit
+
+    for i in range(total_bits):
+        start = i * buckets_per_bit
+        end = start + buckets_per_bit
+        if end > total_time_buckets:
+            break
+        diff = (phase_reloaded[:, start:end] - phase_orig[:, start:end] + np.pi) % (2 * np.pi) - np.pi
         mean_diff = np.mean(np.abs(diff))
-        if mean_diff > 0:
-            # diff = (phase_reloaded[i, :] - phase_orig[i, :] + np.pi) % (2 * np.pi) - np.pi  # Normalize to [-π, π]
-            # mean_diff = np.mean(np.abs(diff))
-            print(f"Freq bin {i}: Mean phase difference = {mean_diff:.3f} radians")
+        if mean_diff > 1.4:
             reconstructedBits.append(1)
+            print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
         else:
-            # print(f"Freq bin {i}: Not modified (bit = 0)")
             reconstructedBits.append(0)
+            print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
 
     print(reconstructedBits)
     string = ""
     for i in range(0, len(reconstructedBits), 8):
         byte = reconstructedBits[i:i+8]
         if len(byte) < 8:
-            break  # Ignore incomplete byte at the end
+            break
         ascii_val = int("".join(map(str, byte)), 2)
-        string += (chr(ascii_val))
+        print(chr(ascii_val), ascii_val)
+        string += chr(ascii_val)
 
     print(string)
