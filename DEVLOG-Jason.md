@@ -73,3 +73,6 @@ Same as title
 
 ### 2024-05-29 - Finished rerecording video
 Same as title
+
+### 2024-05-29 - Made Phase Encoding
+How did this actually work???

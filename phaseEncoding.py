@@ -82,6 +82,7 @@ if mode == "decode":
     buckets_per_bit = 5
     total_time_buckets = phase_orig.shape[1]
     total_bits = total_time_buckets // buckets_per_bit
+    # print(total_bits)
 
     for i in range(numberBytes):
         start = i * buckets_per_bit
@@ -97,7 +98,7 @@ if mode == "decode":
             reconstructedBits.append(0)
             # print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
 
-    print(reconstructedBits)
+    # print(reconstructedBits)
     string = ""
     for i in range(0, len(reconstructedBits), 8):
         byte = reconstructedBits[i:i+8]
