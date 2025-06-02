@@ -1,8 +1,9 @@
 import wave
 import numpy as np
 import sys
+import audioop
 
-def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=3):
+def encode(inWav, message, outWAV, delay=100, amp0=0.0001, amp1=1.7):
     with wave.open(inWav, 'rb') as wf:
         params = wf.getparams()
         audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
@@ -27,7 +28,7 @@ def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=3):
         wf.writeframes(audio.tobytes())
     print("Encoding done.")
 
-def decode(inWav, num_bytes, delay=500):
+def decode(inWav, num_bytes, delay=100):
     with wave.open(inWav, 'rb') as wf:
         audio = np.clip(np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32), -32768, 32767)
     bits = []
@@ -36,7 +37,7 @@ def decode(inWav, num_bytes, delay=500):
         start = i * block
         if start + block >= len(audio):
             break
-        x = audio[start:start + delay] * 1.05
+        x = audio[start:start + delay] * 1.0001
         y = audio[start + delay:start+ 2 * delay]
         e0 = np.dot(x, x)
         e1 = np.dot(y, x)
