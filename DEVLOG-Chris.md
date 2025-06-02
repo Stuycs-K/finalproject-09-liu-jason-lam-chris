@@ -80,3 +80,6 @@ In title.
 ### 05-30 - FIXED ECHOHIDING YES
 
 Finally fixed a bug where I did not amplify the original segment with the 0 bit amplitude.
+
+### 05-31 + 06-1 - Improved echo hiding
+Made echoHiding work with particularly noisy audio, need a way to clip amplitudes though.
