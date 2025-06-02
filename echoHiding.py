@@ -2,7 +2,7 @@ import wave
 import numpy as np
 import sys
 
-def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=1):
+def encode(inWav, message, outWAV, delay=500, amp0=0.05, amp1=3):
     with wave.open(inWav, 'rb') as wf:
         params = wf.getparams()
         audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
