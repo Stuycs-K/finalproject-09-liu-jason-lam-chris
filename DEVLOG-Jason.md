@@ -67,6 +67,7 @@ Did research on other method using DFT so imma try that tmrw
 Did some testing to little to no sucess so no commits
 
 ### 2024-05-27 - Did makefile and README
+Same as title
 
 ### 2024-05-28 - Finished slides and recorded video
 Same as title
@@ -76,3 +77,6 @@ Same as title
 
 ### 2024-05-29 - Made Phase Encoding
 How did this actually work???
+
+### 2024-05-29 - More Makefile updates
+Same as title
