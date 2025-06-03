@@ -2,7 +2,7 @@
 usage:
 	@echo "There are 6 programs avaliable for different types of audio steganography. Listed below are descriptions and how to use them.\n"
 	@echo "First function is lsb (Least Significant Bit) encoding and decoding.\n     make lsb ARGS=\"encode PathtoAudio Message OutputName\"\n     make lsb ARGS=\"decode PathtoAudio NumberofBytes\"\n"
-	@echo "Second function is Echo Hiding encoding and decoding.\n     make echo ARGS=\"encode PathtoAudio Message OutputName\"\n     make echo ARGS=\"decode PathtoAudio NumberofBytes\"\n\n     Function requires audio made by make create for consistent results\n"
+	@echo "Second function is Echo Hiding encoding and decoding.\n     make echo ARGS=\"encode PathtoAudio Message OutputName\"\n     make echo ARGS=\"decode PathtoAudio NumberofBytes\"\n\n     Function requires audio made by make create for consistent results\n     Audio with high amplitudes may be decoded incorrectly because echos are harder to detect. If you used wavCreate.py, you can just change the amplitude within the code.\n"
 	@echo "Third function is Wav Create which is needed to create the input file for echo hiding.\n     make create\n"
 	@echo "Fourth function is Image to Audio Conversion.\n     make convert ARGS=\"ImageName OutputName ColorPriorityMode VisibilityPercentage TimeResolutionMultiplier FrequencyResolutionMultiplier\"\n\n    ColorPriorityMode should be Dark or Light\n"
 	@echo "Fifth function is Image embedding into Audio.\n     make embed ARGS=\"ImageName AudioName OutputName ImageHeight ImageLength ImageStartX ImageStartY ColorPriorityMode VisibilityPercentage TimeResolutionMultiplier FrequencyResolutionMultiplier\"\n\n    ColorPriorityMode should be Dark or Light\n"
