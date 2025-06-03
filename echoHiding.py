@@ -1,45 +1,68 @@
 import wave
 import numpy as np
 import sys
-import audioop
 
-def encode(inWav, message, outWAV, delay=100, amp0=0.0001, amp1=1.7):
+def encode(inWav, message, outWAV, delay=200, amp0=0.1, amp1=0.2):
     with wave.open(inWav, 'rb') as wf:
         params = wf.getparams()
-        audio = np.frombuffer(wf.readframes(params.nframes), dtype=np.int16).astype(np.float32)
+        n_channels, sampwidth, framerate, n_frames, comptype, compname = params
+        audio = np.frombuffer(wf.readframes(n_frames), dtype=np.int16).astype(np.float32)
+
+    if n_channels == 2:
+        audio = audio.reshape(-1, 2)
+        left = audio[:, 0].copy()
+        right = audio[:, 1].copy()
+    else:
+        left = audio.copy()
+        right = None
 
     bits = [int(b) for c in message for b in f"{ord(c):08b}"]
     print("Number of bits encoded:", int(len(bits) / 8))
 
-
     block = 2 * delay
     for i, bit in enumerate(bits):
         start = i * block
-        if start + block >= len(audio):
+        if start + block >= len(left):
             print(f"Block {i} truncated, skipping")
             break
         amp = amp1 if bit else amp0
         for j in range(delay):
-            audio[start + delay + j] += amp * audio[start + j]
+            left[start + delay + j] += amp * left[start + j]
 
-    audio = np.clip(audio, -32768, 32767).astype(np.int16)
+    left = np.clip(left, -32768, 32767).astype(np.int16)
+
+    if right is not None:
+        audio = np.stack((left, right), axis=1).flatten()
+    else:
+        audio = left
+
     with wave.open(outWAV, 'wb') as wf:
         wf.setparams(params)
         wf.writeframes(audio.tobytes())
+
     print("Encoding done.")
 
-def decode(inWav, num_bytes, delay=100):
+def decode(inWav, num_bytes, delay=200):
     with wave.open(inWav, 'rb') as wf:
-        audio = np.clip(np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32), -32768, 32767)
+        params = wf.getparams()
+        n_channels, sampwidth, framerate, n_frames, comptype, compname = params
+        audio = np.frombuffer(wf.readframes(n_frames), dtype=np.int16).astype(np.float32)
+
+    if n_channels == 2:
+        audio = audio.reshape(-1, 2)
+        left = audio[:, 0]
+    else:
+        left = audio
+
     bits = []
     block = 2 * delay
     for i in range(num_bytes * 8):
         start = i * block
-        if start + block >= len(audio):
+        if start + block >= len(left):
             break
-        x = audio[start:start + delay] * 1.0001
-        y = audio[start + delay:start+ 2 * delay]
-        e0 = np.dot(x, x)
+        x = left[start:start + delay] * (1.1)
+        y = left[start + delay:start + 2 * delay]
+        e0 = np.dot(x, x) 
         e1 = np.dot(y, x)
         bit = 1 if abs(e1) > abs(e0) else 0
         print(f"Block {i}: e0={e0:.1f}, e1={e1:.1f} -> bit={bit}")
@@ -47,7 +70,6 @@ def decode(inWav, num_bytes, delay=100):
 
     chars = [chr(int("".join(map(str, bits[i:i+8])), 2)) for i in range(0, len(bits), 8)]
     print("Decoded message:", ''.join(chars))
-
 
 if __name__ == "__main__":
     if sys.argv[1] == "encode":
