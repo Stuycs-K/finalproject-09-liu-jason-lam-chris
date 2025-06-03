@@ -46,5 +46,5 @@ https://medium.com/@AungKyawZall/audio-steganography-39f9fb6d9330 - Base ideas t
 
 https://librosa.org/doc/0.11.0/generated/librosa.stft.html - Documentation for stft used in Spectrogram
 
-https://medium.com/@achyuta.katta/audio-steganography-using-phase-encoding-d13f100380f2 - Research about Phase Encoding (Did not end up in final project)
+https://medium.com/@achyuta.katta/audio-steganography-using-phase-encoding-d13f100380f2 - Research about Phase Encoding
 
