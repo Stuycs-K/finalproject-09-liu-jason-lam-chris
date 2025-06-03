@@ -1,7 +1,7 @@
 import numpy as np
 import wave
 
-def generateWav(filename='clean.wav', duration_sec=1, freq=440, sample_rate=44100, amplitude= 10):
+def generateWav(filename='clean.wav', duration_sec=1, freq=440, sample_rate=44100, amplitude= 1000):
     t = np.linspace(0, duration_sec, int(sample_rate * duration_sec), endpoint=False)
     #amplitude max 32767 for int16, keep some headroom
     samples = (amplitude * np.sin(2 * np.pi * freq * t)).astype(np.int16)
@@ -14,4 +14,4 @@ def generateWav(filename='clean.wav', duration_sec=1, freq=440, sample_rate=4410
 
     print(f"Generated {filename} ({duration_sec}s, {freq}Hz sine wave)")
 
-generateWav("clean.wav", duration_sec=3)
+generateWav("clean.wav", duration_sec=15)
