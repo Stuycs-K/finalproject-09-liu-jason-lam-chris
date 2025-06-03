@@ -87,3 +87,7 @@ Made echoHiding work with particularly noisy audio, need a way to clip amplitude
 ### 06-2 - Discoveded that echo hiding had bugs
 
 Bruh moment 
+
+Fixed bugs (sort of, still really clunky and audio dependent)
+
+Made a stereo component for echo hiding
