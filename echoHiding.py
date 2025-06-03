@@ -2,17 +2,17 @@ import wave
 import numpy as np
 import sys
 
-def encode(inWav, message, outWAV, delay=200, amp0=0.1, amp1=0.2):
+def encode(inWav, message, outWAV, delay=200, amp0=0.1, amp1=3):
     with wave.open(inWav, 'rb') as wf:
         params = wf.getparams()
         n_channels, sampwidth, framerate, n_frames, comptype, compname = params
         audio = np.frombuffer(wf.readframes(n_frames), dtype=np.int16).astype(np.float32)
 
-    if n_channels == 2:
-        audio = audio.reshape(-1, 2)
-        left = audio[:, 0].copy()
-        right = audio[:, 1].copy()
-    else:
+    #if n_channels == 2:
+        #audio = audio.reshape(-1, 2)
+        #left = audio[:, 0].copy()
+        #right = audio[:, 1].copy()
+    #else:
         left = audio.copy()
         right = None
 
@@ -48,10 +48,10 @@ def decode(inWav, num_bytes, delay=200):
         n_channels, sampwidth, framerate, n_frames, comptype, compname = params
         audio = np.frombuffer(wf.readframes(n_frames), dtype=np.int16).astype(np.float32)
 
-    if n_channels == 2:
-        audio = audio.reshape(-1, 2)
-        left = audio[:, 0]
-    else:
+    # if n_channels == 2:
+    #     audio = audio.reshape(-1, 2)
+    #     left = audio[:, 0]
+    # else:
         left = audio
 
     bits = []
@@ -62,7 +62,7 @@ def decode(inWav, num_bytes, delay=200):
             break
         x = left[start:start + delay] * (1.1)
         y = left[start + delay:start + 2 * delay]
-        e0 = np.dot(x, x) 
+        e0 = np.dot(x, x)
         e1 = np.dot(y, x)
         bit = 1 if abs(e1) > abs(e0) else 0
         print(f"Block {i}: e0={e0:.1f}, e1={e1:.1f} -> bit={bit}")
