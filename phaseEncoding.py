@@ -36,7 +36,7 @@ else:
 
 # STFT parameters
 n_fft = 2048
-hop_length = 512
+hop_length = 512 # Decrease for more capacity
 win_length = n_fft
 window = 'hann'
 
@@ -59,6 +59,7 @@ if mode == "encode":
         start = i * buckets_per_bit
         end = start + buckets_per_bit
         if end > phase_orig.shape[1]:
+            print(phase_orig.shape[1])
             break
         if bit == 1:
             phase_mod[:, start:end] += np.pi  # Apply π shift to 5 frames
@@ -93,10 +94,10 @@ if mode == "decode":
         mean_diff = np.mean(np.abs(diff))
         if mean_diff > 1.4:
             reconstructedBits.append(1)
-            # print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
+            print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
         else:
             reconstructedBits.append(0)
-            # print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
+            print(f"Bit {i}: Mean phase difference = {mean_diff:.3f}")
 
     # print(reconstructedBits)
     string = ""
