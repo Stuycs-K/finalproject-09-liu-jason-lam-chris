@@ -13,6 +13,7 @@ Wrote up the proposal and planned what we'll be doing for the next two weeks - 1
 Wrote pseduocode for LSB using the previous visual LSB lab for refrence - 30 mins
 
 ### 2025-05-16 - Started Least Significant Byte and continued to research WAV headers
+- https://docs.fileformat.com/audio/wav/  
 Started LSB code:
 	- Transfered image steganography LSB to audio LSB - 20 mins
 	- Learnt what the 44 bytes in a WAV header meant - 30 mins
@@ -29,18 +30,19 @@ LSB Decoder:
 	Decoded a bug where the order of bitwise functions messed with recombination - 30 mins
 
 ### 2025-05-19 - Researched + Started implementing Echo Hiding
+
 Fixed LSB and PROPOSAL formatting - 15 mins
 Researched WAV files and echo hiding - 1 hour
+- http://www.fim.uni-linz.ac.at/lva/Rechtliche_Aspekte/2001SS/Stegano/leseecke/echo%20data%20hiding%20by%20d.%20gruhl%20and%20w.%20bender.pdf
 Finished code to open a WAV file and extract its channel, sample width, frame rate, and num of frames - 30 mins
 
 ### 05-20 - Text to Bit array + Echo encoding for MONO only (1 channel)
 Made a function to convert ascii characters into a specific bit array that I need - 40 mins
 
 Echo encoding (2 hours):
-
-	- Learnt what signals were and decided and currently debating on whether or not to use them
-	- Used extracted information from WAV file to have an echo and two delays, matched each delay to their corresponding bit array
-	- Wrote write to a WAV file
+	Learnt what signals were and decided and currently debating on whether or not to use them
+	Used extracted information from WAV file to have an echo and two delays, matched each delay to their corresponding bit array
+	Wrote write to a WAV file
 
 ### 05-21 - Debugging Echo encode
 Fixed like 30 syntax bugs, cleaned up the code, made every parameter in a WAV file print, still need to test if it works by creating a working decode - 1 hour
@@ -57,7 +59,7 @@ Basically rewrote my previous decode by basically breaking audio to segments
 Read more on this report on signals
 
 ### 05-24 + 05-25 - I am in so much pain (Echo Decode and maybe encode don't work at all)
-
+Deleted PROPOSAL
 why why why why why why why - 5 hours (ongoing)
 
 
@@ -81,13 +83,16 @@ In title.
 
 Finally fixed a bug where I did not amplify the original segment with the 0 bit amplitude.
 
-### 05-31 + 06-1 - Improved echo hiding
+### 05-31 + 06-01 - Improved echo hiding
 Made echoHiding work with particularly noisy audio, need a way to clip amplitudes though.
 
-### 06-2 - Discoveded that echo hiding had bugs
+### 06-02 - Discoveded that echo hiding had bugs
 
 Bruh moment 
 
 Fixed bugs (sort of, still really clunky and audio dependent)
 
 Made a stereo component for echo hiding
+
+### 06-03 - Last changes to formatting + echo hiding tweaks
+Title.
