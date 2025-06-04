@@ -13,11 +13,12 @@ Wrote up the proposal and planned what we'll be doing for the next two weeks - 1
 Wrote pseduocode for LSB using the previous visual LSB lab for refrence - 30 mins
 
 ### 2025-05-16 - Started Least Significant Byte and continued to research WAV headers
-- https://docs.fileformat.com/audio/wav/  
 Started LSB code:
 	- Transfered image steganography LSB to audio LSB - 20 mins
 	- Learnt what the 44 bytes in a WAV header meant - 30 mins
 	- Successfully wrote and debugged a byte reading function for a WAV (need to figure out how to get rid of the header) - 30 mins
+- https://docs.fileformat.com/audio/wav/  
+
 
 ### 2025-05-17 + 18 - Finished LSB Encoder + Decoder
 LSB Encoder:
@@ -34,6 +35,7 @@ LSB Decoder:
 Fixed LSB and PROPOSAL formatting - 15 mins
 Researched WAV files and echo hiding - 1 hour
 - http://www.fim.uni-linz.ac.at/lva/Rechtliche_Aspekte/2001SS/Stegano/leseecke/echo%20data%20hiding%20by%20d.%20gruhl%20and%20w.%20bender.pdf
+
 Finished code to open a WAV file and extract its channel, sample width, frame rate, and num of frames - 30 mins
 
 ### 05-20 - Text to Bit array + Echo encoding for MONO only (1 channel)
